@@ -1,50 +1,89 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: 240 10% 99.5%; /* Softest off-white tint */
+    --foreground: 240 10% 3.9%;   /* Very dark slate, almost black */
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+
+    --primary: 262.1 83.3% 57.8%; /* Stunning brand violet */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 262.1 30% 96%;   /* Soft light-violet tint */
+    --secondary-foreground: 262.1 80% 20%;
+
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+
+    --accent: 172.5 66% 50%;      /* Vibrant energetic Teal */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 346.8 77.2% 49.8%;
+    --destructive-foreground: 355.7 100% 97.3%;
+
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 262.1 83.3% 57.8%;
+
+    --radius: 0.75rem; /* Modern rounded corners */
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;  /* Premium obsidian slate */
+    --foreground: 0 0% 98%;      /* Soft elegant off-white */
+
+    --card: 240 10% 5.9%;        /* Deep, slightly elevated obsidian */
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 5.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 262.1 83.3% 57.8%; /* Gorgeous brand violet */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 262.1 30% 12%;   /* Deep dark violet tint */
+    --secondary-foreground: 262.1 80% 85%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 172.5 66% 50%;      /* Vibrant energetic Teal */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 358.3 84.4% 40.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 262.1 83.3% 57.8%;
   }
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.imgDark {
-  display: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+@layer base {
+  * {
+    @apply border-border;
   }
+  body {
+    @apply bg-background text-foreground antialiased font-sans transition-colors duration-300;
+  }
+}
 
-  .imgLight {
-    display: none;
-  }
-  .imgDark {
-    display: unset;
-  }
+/* Glassmorphism custom helper utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.dark .glass {
+  background: rgba(10, 10, 10, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }

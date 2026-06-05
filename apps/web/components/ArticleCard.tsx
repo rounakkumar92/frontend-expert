@@ -46,30 +46,32 @@ export function ArticleCard({ article, skeleton = false }: ArticleCardProps) {
   const { title, slug, excerpt, publishedAt, readTime, category, author } = article;
 
   return (
-    <article className="group flex flex-col h-full rounded-2xl border border-border/50 bg-card/30 p-6 glass hover:bg-card/50 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/[0.02] focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background transition-all duration-300">
+    <article className="group relative flex flex-col h-full rounded-2xl border border-border/50 bg-card/30 p-6 glass hover:bg-card/50 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/[0.02] focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background transition-all duration-300">
       {/* Category Pill */}
       <span className="inline-block text-[11px] font-bold uppercase tracking-wider text-accent dark:text-accent/90 mb-3.5 self-start">
         {category}
       </span>
 
-      {/* Title */}
-      <Link href={`/blog/${slug}`} className="group/link focus:outline-none flex-grow">
-        <h3 className="text-xl font-bold text-foreground leading-snug group-hover/link:text-primary dark:group-hover/link:text-primary-foreground/90 transition-colors duration-200">
-          {title}
+      {/* Title & Link */}
+      <div className="flex-grow">
+        <h3 className="text-xl font-bold text-foreground leading-snug group-hover:text-primary dark:group-hover:text-primary-foreground/90 transition-colors duration-200">
+          <Link href={`/blog/${slug}`} className="focus:outline-none">
+            {/* Stretched overlay to capture clicks safely on the whole card */}
+            <span className="absolute inset-0 rounded-2xl z-10" aria-hidden="true" />
+            {title}
+          </Link>
         </h3>
         <p className="mt-3.5 text-sm text-muted-foreground leading-relaxed line-clamp-3">
           {excerpt}
         </p>
-      </Link>
+      </div>
 
-      {/* Decorative Arrow link for accessibility */}
+      {/* Decorative Arrow indicator (no redundant tabIndex/Link) */}
       <div className="mt-6">
-        <Link
-          href={`/blog/${slug}`}
-          className="flex items-center text-xs font-semibold text-primary/80 group-hover:text-primary transition-colors duration-200 gap-1 select-none">
+        <div className="flex items-center text-xs font-semibold text-primary/80 group-hover:text-primary transition-colors duration-200 gap-1 select-none pointer-events-none">
           <span>Read Article</span>
           <ArrowRight className="h-3.5 w-3.5 transform group-hover:translate-x-1 transition-transform duration-200" />
-        </Link>
+        </div>
       </div>
 
       {/* Divider */}

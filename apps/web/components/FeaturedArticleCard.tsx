@@ -67,17 +67,21 @@ export function FeaturedArticleCard({
               </span>
             </div>
 
-            <Link href={`/blog/${slug}`} className="group/link focus:outline-none block">
-              <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-foreground leading-tight tracking-tight group-hover/link:text-primary dark:group-hover/link:text-primary-foreground/90 transition-colors duration-200">
-                {title}
+            <div>
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-foreground leading-tight tracking-tight group-hover:text-primary dark:group-hover:text-primary-foreground/90 transition-colors duration-200">
+                <Link href={`/blog/${slug}`} className="focus:outline-none">
+                  {/* Stretched overlay to capture clicks safely on the whole card */}
+                  <span className="absolute inset-0 rounded-3xl z-10" aria-hidden="true" />
+                  {title}
+                </Link>
               </h3>
               <p className="mt-4 text-sm sm:text-base text-muted-foreground leading-relaxed">
                 {excerpt}
               </p>
-            </Link>
+            </div>
 
             {/* Tags preview */}
-            <div className="flex flex-wrap gap-1.5 pt-1">
+            <div className="flex flex-wrap gap-1.5 pt-1 relative z-20">
               {tags.map((tag) => (
                 <span
                   key={tag}
@@ -90,13 +94,10 @@ export function FeaturedArticleCard({
           </div>
 
           <div className="mt-8">
-            <Link
-              href={`/blog/${slug}`}
-              className="inline-flex items-center text-sm font-bold text-primary dark:text-primary-foreground/90 hover:opacity-90 gap-1.5 select-none focus:outline-none"
-            >
+            <div className="inline-flex items-center text-sm font-bold text-primary dark:text-primary-foreground/90 hover:opacity-90 gap-1.5 select-none pointer-events-none">
               <span>Read Full Deep Dive</span>
               <ArrowRight className="h-4 w-4 transform group-hover:translate-x-1.5 transition-transform duration-250" />
-            </Link>
+            </div>
 
             {/* Divider */}
             <div className="border-t border-border/30 my-6" />

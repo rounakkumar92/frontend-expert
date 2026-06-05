@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
-import { Container } from "./ui/container";
-import { Terminal, Shield, ArrowDown } from "lucide-react";
+import { Container } from "@/components/ui/container";
+import { Terminal, ArrowDown } from "lucide-react";
 
 export function HeroSection() {
   return (

@@ -2,6 +2,7 @@ export interface Author {
   name: string;
   avatarUrl: string;
   role?: string;
+  bio?: string;
 }
 
 export interface Article {
@@ -14,4 +15,5 @@ export interface Article {
   tags: string[];
   category: string;
   author: Author;
+  content: string;
 }

@@ -48,10 +48,13 @@ export function HeroSection() {
         </div>
 
         {/* Scrolling helper tag */}
-        <div className="mt-16 md:mt-24 flex items-center justify-center text-[10px] uppercase font-bold tracking-widest text-muted-foreground/60 gap-1.5 animate-bounce select-none">
+        <Link
+          href="#featured"
+          className="mt-16 md:mt-24 flex items-center justify-center text-[10px] uppercase font-bold tracking-widest text-muted-foreground/60 gap-1.5 hover:text-muted-foreground transition-colors duration-200 select-none group"
+        >
           <span>Scroll to articles</span>
-          <ArrowDown className="h-3 w-3" />
-        </div>
+          <ArrowDown className="h-3 w-3 group-hover:translate-y-0.5 transition-transform duration-200" />
+        </Link>
       </Container>
     </section>
   );

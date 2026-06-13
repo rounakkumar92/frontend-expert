@@ -8,7 +8,7 @@ import { ReadingProgress } from "@/components/article/ReadingProgress";
 import { ShareActions } from "@/components/article/ShareActions";
 import { ArticleCard } from "@/components/ArticleCard";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { MOCK_FEATURED_ARTICLE, MOCK_ARTICLES } from "@/lib/mock-data";
+import { getArticleBySlug, getAllArticles } from "@/lib/content";
 import { Calendar, Clock, ArrowLeft, User } from "lucide-react";
 import Link from "next/link";
 
@@ -19,8 +19,7 @@ interface BlogPageProps {
 // 1. Generate dynamic SEO Meta Tags for high-fidelity search indexability
 export async function generateMetadata({ params }: BlogPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const allArticles = [MOCK_FEATURED_ARTICLE, ...MOCK_ARTICLES];
-  const article = allArticles.find((a) => a.slug === slug);
+  const article = await getArticleBySlug(slug);
 
   if (!article) {
     return {
@@ -42,10 +41,17 @@ export async function generateMetadata({ params }: BlogPageProps): Promise<Metad
   };
 }
 
+// 2. Generate Static Paths for Next.js Static Site Generation (SSG)
+export async function generateStaticParams() {
+  const articles = await getAllArticles();
+  return articles.map((article) => ({
+    slug: article.slug,
+  }));
+}
+
 export default async function BlogPage({ params }: BlogPageProps) {
   const { slug } = await params;
-  const allArticles = [MOCK_FEATURED_ARTICLE, ...MOCK_ARTICLES];
-  const article = allArticles.find((a) => a.slug === slug);
+  const article = await getArticleBySlug(slug);
 
   // Return standard Next.js dynamic 404 if route is unrecognized
   if (!article) {
@@ -54,7 +60,9 @@ export default async function BlogPage({ params }: BlogPageProps) {
 
   const { title, excerpt, publishedAt, readTime, category, author, content, tags } = article;
 
-  // 2. Related Articles Engine (filter out active, match category or recommend latest)
+  const allArticles = await getAllArticles();
+
+  // 3. Related Articles Engine (filter out active, match category or recommend latest)
   const relatedArticles = allArticles
     .filter((a) => a.id !== article.id)
     .sort((a, b) => {

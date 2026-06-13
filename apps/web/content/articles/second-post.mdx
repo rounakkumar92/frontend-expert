@@ -1,0 +1,81 @@
+---
+id: "art-1"
+title: "The Cost of JavaScript: Optimizing Interaction to Next Paint (INP)"
+excerpt: "Interaction to Next Paint (INP) is now an official Core Web Vital. Learn how to diagnose main-thread bottlenecks, profile blocking tasks in Chrome DevTools, optimize complex event handlers, and implement scheduler yield schedules to keep your interactive UI liquid smooth."
+publishedAt: "May 18, 2026"
+readTime: "9 min read"
+category: "Performance"
+author: "sarah"
+tags:
+  - "Performance"
+  - "Web Vitals"
+  - "DevTools"
+---
+Interaction to Next Paint (INP) is now a core ranking factor and Core Web Vital. Unlike First Input Delay (FID), which only measured the initial delay of the very first click, INP assesses the responsiveness of every single user interaction throughout the entire lifespan of the page.
+
+In this performance-oriented article, we analyze the mechanical lifecycle of an interaction and how to yield blocking tasks to ensure low-latency responsiveness.
+
+## Anatomy of an Interaction
+
+When a user interacts with an element (e.g., clicking a button or pressing a keyboard key), the total time between the input and the subsequent visual frame rendering is composed of three distinct phases:
+
+1.  **Input Delay**: The time between the user interaction and the execution of the event handler. This is primarily caused by main-thread blocking tasks.
+2.  **Processing Time**: The time spent executing the event handler callbacks in JavaScript.
+3.  **Presentation Delay**: The time required by the browser to recalculate layouts, style sheets, composite layers, and paint the next frame to the screen.
+
+> [!IMPORTANT]
+> To maintain a "Good" rating, your INP must stay under **200 milliseconds**. Anything above **500 milliseconds** is flagged as "Poor" and actively damages SEO ranking metrics.
+
+## Diagnosing Main-Thread Blockers
+
+To identify why your INP is high, we must open Chrome DevTools and capture a performance profile. Look for **Long Tasks** (tasks that exceed **50 milliseconds** in duration), highlighted with a red flag in the flame chart.
+
+```javascript filename="heavy-handler.js"
+// A common culprit: executing heavy synchronous loops inside click events
+button.addEventListener("click", () => {
+  // Heavy synchronous blocking task
+  const data = processHeavyDataset(dataset);
+  renderResults(data);
+});
+```
+
+## Yielding Execution to the Main Thread
+
+To solve processing lag, we can break up long JavaScript tasks into smaller asynchronous sub-tasks. This allows the browser's rendering engine to slot in style paints and handle other user inputs between tasks.
+
+Here is how you write a clean, high-performance yielding schedule using the Scheduler API or `setTimeout` fallbacks:
+
+```typescript filename="yield.ts"
+// Helper utility to yield execution
+function yieldToMain() {
+  return new Promise((resolve) => {
+    // If the browser supports scheduler.postTask, use it. Otherwise fallback.
+    if ("scheduler" in window) {
+      resolve(scheduler.postTask(() => {}, { priority: "background" }));
+    } else {
+      setTimeout(resolve, 0);
+    }
+  });
+}
+
+// Optimized event handler
+async function handleButtonClick() {
+  // 1. Process initial light updates
+  showLoadingSpinner();
+  
+  // 2. Yield so the browser paints the loading spinner immediately
+  await yieldToMain();
+  
+  // 3. Process heavy computation asynchronously
+  const chunk1 = processChunk(data.slice(0, 1000));
+  await yieldToMain(); // Yield again
+  
+  const chunk2 = processChunk(data.slice(1000, 2000));
+  await yieldToMain();
+  
+  // 4. Render results
+  renderFinalUI([chunk1, chunk2]);
+}
+```
+
+By yielding execution frequently, you can keep the main thread fluid and responsive, dropping your INP score from poor levels down to double-digit millisecond ranges!

@@ -1,15 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
-import { Check, Copy } from "lucide-react";
+import { Check, Copy, FileCode } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface CodeBlockProps {
   code: string;
   language?: string;
+  filename?: string;
 }
 
-export function CodeBlock({ code, language = "typescript" }: CodeBlockProps) {
+export function CodeBlock({ code, language = "typescript", filename }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -22,93 +23,107 @@ export function CodeBlock({ code, language = "typescript" }: CodeBlockProps) {
     }
   };
 
-  // Bespoke high-fidelity Regex Syntax Highlighter
   const highlightCode = (rawCode: string, lang: string) => {
-    // 1. Escape HTML to prevent injection issues
     let escaped = rawCode
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
 
-    // Helper token wrappers
     const wrap = (cls: string, content: string) => `<span class="${cls}">${content}</span>`;
 
-    // Highlighting rules based on standard languages
-    if (lang === "typescript" || lang === "javascript" || lang === "ts" || lang === "js") {
+    if (
+      lang === "typescript" ||
+      lang === "javascript" ||
+      lang === "ts" ||
+      lang === "js" ||
+      lang === "tsx" ||
+      lang === "jsx"
+    ) {
       return escaped
-        // Keywords
         .replace(
-          /\b(const|let|var|function|return|import|export|from|default|class|extends|type|interface|async|await|try|catch|new|typeof|instanceof|as|const|public|private)\b/g,
-          wrap("text-primary dark:text-violet-400 font-semibold", "$1")
+          /\b(const|let|var|function|return|import|export|from|default|class|extends|type|interface|async|await|try|catch|new|typeof|instanceof|as|public|private|static|readonly|keyof|void)\b/g,
+          wrap("text-violet-500 dark:text-violet-400 font-semibold", "$1")
         )
-        // Control structures / Booleans / Null
         .replace(
           /\b(if|else|for|while|switch|case|break|continue|true|false|null|undefined)\b/g,
           wrap("text-amber-500 font-semibold", "$1")
         )
-        // Function declarations/calls (word followed by parenthesis)
         .replace(
           /\b([a-zA-Z0-9_]+)(?=\()/g,
           wrap("text-blue-500 dark:text-blue-400 font-medium", "$1")
         )
-        // Comments (single line and multi line) - note we do simple patterns that don't collide with wraps
         .replace(/(\/\/.*)/g, wrap("text-muted-foreground/60 italic font-normal", "$1"))
-        // Strings (double quotes, single quotes, backticks)
         .replace(/("[^"]*")/g, wrap("text-accent dark:text-teal-400 font-medium", "$1"))
         .replace(/('[^']*')/g, wrap("text-accent dark:text-teal-400 font-medium", "$1"))
         .replace(/(`[^`]*`)/g, wrap("text-accent dark:text-teal-400 font-medium", "$1"));
     }
 
+    if (lang === "json") {
+      return escaped
+        .replace(/("[^"]*")(\s*:)/g, `${wrap("text-blue-500 dark:text-blue-400 font-semibold", "$1")}$2`)
+        .replace(/:(\s*)("[^"]*")/g, `:$1${wrap("text-accent dark:text-teal-400 font-medium", "$2")}`)
+        .replace(/:(\s*)(-?\d+\.?\d*)/g, `:$1${wrap("text-violet-500 dark:text-violet-400", "$2")}`)
+        .replace(/:(\s*)(true|false|null)/g, `:$1${wrap("text-amber-500 font-semibold", "$2")}`);
+    }
+
+    if (lang === "bash" || lang === "sh" || lang === "shell") {
+      return escaped
+        .replace(
+          /(^|[^a-zA-Z0-9_\-\/])(npm|pnpm|yarn|npx|git|curl|wget|cd|mkdir|rm|ls|cat|echo)\b/g,
+          `$1${wrap("text-violet-500 dark:text-violet-400 font-bold", "$2")}`
+        )
+        .replace(
+          /(^|[^a-zA-Z0-9_\-\/])(run|install|add|commit|push|pull|clone|checkout|init|build|dev)\b/g,
+          `$1${wrap("text-blue-500 dark:text-blue-400 font-medium", "$2")}`
+        )
+        .replace(/(\s-[a-zA-Z0-9\-]+|\s--[a-zA-Z0-9\-]+)/g, wrap("text-amber-500 font-normal", "$1"))
+        .replace(/("[^"]*")/g, wrap("text-accent dark:text-teal-400 font-medium", "$1"))
+        .replace(/(#.*)/g, wrap("text-muted-foreground/60 italic", "$1"));
+    }
+
     if (lang === "css") {
       return escaped
-        // Selectors
         .replace(
           /([a-zA-Z0-9_\-\.\#\:\,\s]+)(?=\s*\{)/g,
-          wrap("text-primary dark:text-violet-400 font-bold", "$1")
+          wrap("text-violet-500 dark:text-violet-400 font-bold", "$1")
         )
-        // Rules / Properties
         .replace(
           /([a-zA-Z\-]+)(?=\s*\:)/g,
           wrap("text-blue-500 dark:text-blue-400 font-medium", "$1")
         )
-        // Colors & Values (following a colon)
         .replace(
           /(\:\s*)([a-zA-Z0-9\-\(\)\s\,\#\%\.]+)(?=;|\})/g,
           (_, p1, p2) => `${p1}${wrap("text-accent dark:text-teal-400 font-medium", p2)}`
         )
-        // Comments
         .replace(/(\/\*[\s\S]*?\*\/)/g, wrap("text-muted-foreground/60 italic font-normal", "$1"));
     }
 
     if (lang === "html" || lang === "xml") {
       return escaped
-        // Tag names
-        .replace(
-          /(&lt;\/?[a-zA-Z0-9\-]+)/g,
-          wrap("text-primary dark:text-violet-400 font-semibold", "$1")
-        )
-        // Ending tag bracket
-        .replace(/(\/?&gt;)/g, wrap("text-primary dark:text-violet-400 font-semibold", "$1"))
-        // Attributes (word followed by =)
-        .replace(
-          /\b([a-zA-Z\-]+)(?=\s*=\s*")/g,
-          wrap("text-blue-500 dark:text-blue-400 font-medium", "$1")
-        )
-        // Attribute values
+        .replace(/(&lt;\/?[a-zA-Z0-9\-]+)/g, wrap("text-violet-500 dark:text-violet-400 font-semibold", "$1"))
+        .replace(/(\/?&gt;)/g, wrap("text-violet-500 dark:text-violet-400 font-semibold", "$1"))
+        .replace(/\b([a-zA-Z\-]+)(?=\s*=\s*")/g, wrap("text-blue-500 dark:text-blue-400 font-medium", "$1"))
         .replace(/("[^"]*")/g, wrap("text-accent dark:text-teal-400 font-medium", "$1"));
     }
 
-    // Default fallback
     return escaped;
   };
 
   return (
     <div className="relative group border border-border/60 rounded-xl bg-muted/20 dark:bg-card/25 shadow-sm overflow-hidden my-6">
-      {/* Code Header Bar */}
+      {/* Header Bar */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-border/50 bg-muted/40 font-mono text-[10px] text-muted-foreground/80 font-bold uppercase select-none">
-        <span>{language}</span>
-        
-        {/* Copy Utility Button */}
+        <div className="flex items-center gap-1.5">
+          {filename ? (
+            <>
+              <FileCode className="h-3.5 w-3.5 text-primary/70 shrink-0" />
+              <span className="font-semibold text-foreground/95 normal-case font-mono">{filename}</span>
+            </>
+          ) : (
+            <span>{language}</span>
+          )}
+        </div>
+
         <button
           type="button"
           onClick={handleCopy}
@@ -117,8 +132,8 @@ export function CodeBlock({ code, language = "typescript" }: CodeBlockProps) {
         >
           {copied ? (
             <>
-              <Check className="h-3 w-3 text-accent animate-fade-in" />
-              <span className="text-[9px] text-accent animate-fade-in">Copied!</span>
+              <Check className="h-3 w-3 text-accent" />
+              <span className="text-[9px] text-accent">Copied!</span>
             </>
           ) : (
             <>

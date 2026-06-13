@@ -6,11 +6,20 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { TagPill } from "@/components/ui/TagPill";
 import { FeaturedArticleCard } from "@/components/FeaturedArticleCard";
 import { ArticleCard } from "@/components/ArticleCard";
-import { MOCK_FEATURED_ARTICLE, MOCK_ARTICLES, MOCK_TRENDING_TAGS } from "@/lib/mock-data";
+import { MOCK_TRENDING_TAGS } from "@/lib/mock-data";
+import { Article } from "@/lib/types";
 import { Sparkles, Loader2, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-export function ArticlesSection() {
+interface ArticlesSectionProps {
+  initialFeaturedArticle: Article;
+  initialArticles: Article[];
+}
+
+export function ArticlesSection({
+  initialFeaturedArticle,
+  initialArticles,
+}: ArticlesSectionProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const simulateLoading = () => {
@@ -52,7 +61,7 @@ export function ArticlesSection() {
           />
           <div className="animate-fade-in-up">
             <FeaturedArticleCard
-              article={MOCK_FEATURED_ARTICLE}
+              article={initialFeaturedArticle}
               skeleton={isLoading}
             />
           </div>
@@ -102,7 +111,7 @@ export function ArticlesSection() {
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {MOCK_ARTICLES.map((article) => (
+            {initialArticles.map((article) => (
               <div key={article.id} className="animate-fade-in-up">
                 <ArticleCard
                   article={article}

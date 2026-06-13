@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link2, Twitter, Linkedin, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -11,12 +11,16 @@ interface ShareActionsProps {
 
 export function ShareActions({ title, slug }: ShareActionsProps) {
   const [copied, setCopied] = useState(false);
+  const [origin, setOrigin] = useState("https://frontendexpert.com");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setOrigin(window.location.origin);
+    }
+  }, []);
 
   const getFullUrl = () => {
-    if (typeof window !== "undefined") {
-      return `${window.location.origin}/blog/${slug}`;
-    }
-    return `https://frontendexpert.com/blog/${slug}`;
+    return `${origin}/blog/${slug}`;
   };
 
   const handleCopyLink = async () => {

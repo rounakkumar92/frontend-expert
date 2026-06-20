@@ -6,8 +6,9 @@ import { Container } from "../ui/container";
 import { ThemeToggle } from "./ThemeToggle";
 import { MobileNav } from "./MobileNav";
 import { NavLink } from "./NavLink";
-import { Code2 } from "lucide-react";
+import { Code2, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SearchDialog } from "../search/SearchDialog";
 
 const NAV_ITEMS = [
   { label: "Courses", href: "/courses" },
@@ -18,6 +19,7 @@ const NAV_ITEMS = [
 
 export function Header() {
   const [isScrolled, setIsScrolled] = React.useState(false);
+  const [isSearchOpen, setIsSearchOpen] = React.useState(false);
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -28,8 +30,19 @@ export function Header() {
       }
     };
 
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setIsSearchOpen((prev) => !prev);
+      }
+    };
+
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, []);
 
   return (
@@ -64,6 +77,17 @@ export function Header() {
 
           {/* Right Action Menu */}
           <div className="hidden md:flex items-center space-x-3">
+            <button
+              onClick={() => setIsSearchOpen(true)}
+              className="flex items-center gap-2 rounded-lg border border-border bg-card/40 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200 focus:outline-none focus:ring-1 focus:ring-ring shrink-0 select-none mr-1 glass"
+              aria-label="Open search dialog"
+            >
+              <Search className="h-3.5 w-3.5" />
+              <span>Search...</span>
+              <kbd className="hidden lg:inline-flex h-4.5 select-none items-center gap-0.5 rounded border border-border/80 bg-background px-1.5 font-mono text-[9px] font-bold text-muted-foreground/80 leading-none shadow-sm">
+                ⌘K
+              </kbd>
+            </button>
             <ThemeToggle />
             <Link
               href="/login"
@@ -80,12 +104,20 @@ export function Header() {
           </div>
 
           {/* Mobile Menu Action */}
-          <div className="flex md:hidden items-center space-x-3">
+          <div className="flex md:hidden items-center space-x-2">
+            <button
+              onClick={() => setIsSearchOpen(true)}
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card/40 text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200 focus:outline-none focus:ring-1 focus:ring-ring glass"
+              aria-label="Open search dialog"
+            >
+              <Search className="h-4.5 w-4.5" />
+            </button>
             <ThemeToggle />
             <MobileNav navItems={NAV_ITEMS} />
           </div>
         </div>
       </Container>
+      <SearchDialog isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </header>
   );
 }

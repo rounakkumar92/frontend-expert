@@ -10,6 +10,7 @@ import { MOCK_TRENDING_TAGS } from "@/lib/mock-data";
 import { Article } from "@/lib/types";
 import { Sparkles, Loader2, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { slugify } from "@/lib/utils";
 
 interface ArticlesSectionProps {
   initialFeaturedArticle: Article;
@@ -94,7 +95,7 @@ export function ArticlesSection({
               <TagPill
                 key={tag}
                 label={tag}
-                href={`/blog?tag=${encodeURIComponent(tag.toLowerCase())}`}
+                href={`/tags/${slugify(tag)}`}
               />
             ))}
           </div>

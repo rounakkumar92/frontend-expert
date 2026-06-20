@@ -4,8 +4,22 @@ import matter from "gray-matter";
 import { Article } from "./types";
 import { AUTHORS } from "./authors";
 import { MOCK_FEATURED_ARTICLE, MOCK_ARTICLES } from "./mock-data";
+import { slugify } from "./utils";
 
-const ARTICLES_PATH = path.join(process.cwd(), "content/articles");
+const getArticlesPath = (): string => {
+  const paths = [
+    path.join(process.cwd(), "content/articles"),
+    path.join(process.cwd(), "apps/web/content/articles"),
+  ];
+  for (const p of paths) {
+    if (fs.existsSync(p)) {
+      return p;
+    }
+  }
+  return path.join(process.cwd(), "apps/web/content/articles");
+};
+
+const ARTICLES_PATH = getArticlesPath();
 
 export interface RawFrontmatter {
   id: string;
@@ -93,4 +107,103 @@ export async function getAllArticles(): Promise<Article[]> {
     console.error("Error reading all articles:", error);
     return [];
   }
+}
+
+// ---------------------------------------------------------------------------
+// Slugify utility
+// ---------------------------------------------------------------------------
+
+export { slugify };
+
+// ---------------------------------------------------------------------------
+// Tag helpers
+// ---------------------------------------------------------------------------
+
+export interface TagWithCount {
+  name: string;
+  slug: string;
+  count: number;
+}
+
+export async function getAllTags(): Promise<TagWithCount[]> {
+  const articles = await getAllArticles();
+  const tagCounts: Record<string, { name: string; count: number }> = {};
+
+  articles.forEach((article) => {
+    article.tags.forEach((tag) => {
+      const slug = slugify(tag);
+      if (!tagCounts[slug]) {
+        tagCounts[slug] = { name: tag, count: 0 };
+      }
+      tagCounts[slug].count++;
+    });
+  });
+
+  return Object.entries(tagCounts)
+    .map(([slug, { name, count }]) => ({ name, slug, count }))
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+}
+
+export async function getArticlesByTag(tagSlug: string): Promise<Article[]> {
+  const articles = await getAllArticles();
+  return articles.filter((article) =>
+    article.tags.some((tag) => slugify(tag) === tagSlug)
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Category helpers
+// ---------------------------------------------------------------------------
+
+export interface CategoryWithCount {
+  name: string;
+  slug: string;
+  count: number;
+}
+
+export async function getAllCategories(): Promise<CategoryWithCount[]> {
+  const articles = await getAllArticles();
+  const categoryCounts: Record<string, { name: string; count: number }> = {};
+
+  articles.forEach((article) => {
+    const slug = slugify(article.category);
+    if (!categoryCounts[slug]) {
+      categoryCounts[slug] = { name: article.category, count: 0 };
+    }
+    categoryCounts[slug].count++;
+  });
+
+  return Object.entries(categoryCounts)
+    .map(([slug, { name, count }]) => ({ name, slug, count }))
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+}
+
+export async function getArticlesByCategory(categorySlug: string): Promise<Article[]> {
+  const articles = await getAllArticles();
+  return articles.filter((article) => slugify(article.category) === categorySlug);
+}
+
+// ---------------------------------------------------------------------------
+// Related articles engine (scored by shared tags + category)
+// ---------------------------------------------------------------------------
+
+export async function getRelatedArticles(article: Article, limit = 2): Promise<Article[]> {
+  const allArticles = await getAllArticles();
+
+  const scored = allArticles
+    .filter((a) => a.id !== article.id)
+    .map((candidate) => {
+      let score = 0;
+      // +3 for same category
+      if (candidate.category === article.category) score += 3;
+      // +1 per shared tag
+      candidate.tags.forEach((tag) => {
+        if (article.tags.includes(tag)) score += 1;
+      });
+      return { article: candidate, score };
+    })
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score);
+
+  return scored.slice(0, limit).map(({ article }) => article);
 }

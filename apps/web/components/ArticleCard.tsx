@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
 import { Article } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { cn, slugify } from "@/lib/utils";
 
 interface ArticleCardProps {
   article?: Article;
@@ -48,9 +48,12 @@ export function ArticleCard({ article, skeleton = false }: ArticleCardProps) {
   return (
     <article className="group relative flex flex-col h-full rounded-2xl border border-border/50 bg-card/30 p-6 glass hover:bg-card/50 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/[0.02] focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 focus-within:ring-offset-background transition-all duration-300">
       {/* Category Pill */}
-      <span className="inline-block text-[11px] font-bold uppercase tracking-wider text-accent dark:text-accent/90 mb-3.5 self-start">
+      <Link
+        href={`/categories/${slugify(category)}`}
+        className="relative z-20 inline-block text-[11px] font-bold uppercase tracking-wider text-accent dark:text-accent/90 hover:text-primary mb-3.5 self-start transition-colors duration-150"
+      >
         {category}
-      </span>
+      </Link>
 
       {/* Title & Link */}
       <div className="flex-grow">

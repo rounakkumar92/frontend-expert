@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { Calendar, Clock, ArrowRight, Terminal, Flame, Sparkles } from "lucide-react";
 import { Article } from "@/lib/types";
-import { cn } from "@/lib/utils";
+import { cn, slugify } from "@/lib/utils";
 
 interface FeaturedArticleCardProps {
   article?: Article;
@@ -62,9 +62,12 @@ export function FeaturedArticleCard({
                 <Sparkles className="h-3 w-3 text-accent" />
                 <span>Featured Post</span>
               </span>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/90">
+              <Link
+                href={`/categories/${slugify(category)}`}
+                className="relative z-20 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/90 hover:text-foreground transition-colors duration-150"
+              >
                 {category}
-              </span>
+              </Link>
             </div>
 
             <div>
@@ -83,12 +86,13 @@ export function FeaturedArticleCard({
             {/* Tags preview */}
             <div className="flex flex-wrap gap-1.5 pt-1 relative z-20">
               {tags.map((tag) => (
-                <span
+                <Link
                   key={tag}
-                  className="inline-flex items-center text-[10px] font-semibold text-muted-foreground bg-muted/20 px-2 py-0.5 rounded border border-border/40"
+                  href={`/tags/${slugify(tag)}`}
+                  className="inline-flex items-center text-[10px] font-semibold text-muted-foreground bg-muted/20 px-2 py-0.5 rounded border border-border/40 hover:bg-muted/40 hover:text-accent hover:border-accent/20 transition-all duration-150"
                 >
                   #{tag}
-                </span>
+                </Link>
               ))}
             </div>
           </div>

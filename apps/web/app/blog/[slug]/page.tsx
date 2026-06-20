@@ -8,7 +8,7 @@ import { ReadingProgress } from "@/components/article/ReadingProgress";
 import { ShareActions } from "@/components/article/ShareActions";
 import { ArticleCard } from "@/components/ArticleCard";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { getArticleBySlug, getAllArticles } from "@/lib/content";
+import { getArticleBySlug, getAllArticles, getRelatedArticles, slugify } from "@/lib/content";
 import { Calendar, Clock, ArrowLeft, User } from "lucide-react";
 import Link from "next/link";
 
@@ -60,18 +60,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
 
   const { title, excerpt, publishedAt, readTime, category, author, content, tags } = article;
 
-  const allArticles = await getAllArticles();
-
-  // 3. Related Articles Engine (filter out active, match category or recommend latest)
-  const relatedArticles = allArticles
-    .filter((a) => a.id !== article.id)
-    .sort((a, b) => {
-      // Prioritize articles sharing the same category
-      if (a.category === category && b.category !== category) return -1;
-      if (b.category === category && a.category !== category) return 1;
-      return 0;
-    })
-    .slice(0, 2);
+  const relatedArticles = await getRelatedArticles(article, 2);
 
   return (
     <div className="relative py-8 sm:py-12 md:py-16 bg-background scroll-smooth">
@@ -81,18 +70,21 @@ export default async function BlogPage({ params }: BlogPageProps) {
       <Container>
         {/* Back Link */}
         <Link
-          href="/"
+          href="/blog"
           className="inline-flex items-center text-xs font-bold text-muted-foreground hover:text-foreground mb-8 group transition-colors duration-150 focus:outline-none"
         >
           <ArrowLeft className="h-3.5 w-3.5 mr-1.5 transform group-hover:-translate-x-0.5 transition-transform duration-150" />
-          <span>Back to Articles</span>
+          <span>Back to Blog</span>
         </Link>
 
         {/* 3. Header Block: Spacings and Typography hierarchies */}
         <header className="max-w-4xl border-b border-border/40 pb-8 mb-10 md:mb-14">
-          <span className="inline-block text-xs font-bold uppercase tracking-wider text-accent dark:text-accent/90 mb-3.5">
+          <Link
+            href={`/categories/${slugify(category)}`}
+            className="inline-block text-xs font-bold uppercase tracking-wider text-accent dark:text-accent/90 hover:text-primary mb-3.5 transition-colors duration-150"
+          >
             {category}
-          </span>
+          </Link>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-foreground sm:leading-tight">
             {title}
           </h1>
@@ -159,12 +151,13 @@ export default async function BlogPage({ params }: BlogPageProps) {
             {/* Tags footer block */}
             <div className="flex flex-wrap gap-2 mt-10 border-t border-border/30 pt-6">
               {tags.map((tag) => (
-                <span
+                <Link
                   key={tag}
-                  className="inline-flex items-center rounded-lg border border-border bg-card px-2.5 py-1 text-xs font-semibold text-muted-foreground"
+                  href={`/tags/${slugify(tag)}`}
+                  className="inline-flex items-center rounded-lg border border-border bg-card px-2.5 py-1 text-xs font-semibold text-muted-foreground hover:text-accent hover:border-accent/30 hover:bg-card/50 transition-all duration-150"
                 >
                   #{tag}
-                </span>
+                </Link>
               ))}
             </div>
 

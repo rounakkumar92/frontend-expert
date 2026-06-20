@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { Search, X, Command, CornerDownLeft, ArrowUpDown, Clock, History, FileText, Trash2 } from "lucide-react";
 import { Article } from "@/lib/types";
@@ -21,6 +22,13 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Mounted check (avoid SSR mismatch)
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
 
   // 1. Fetch search index dynamically on open/focus
   useEffect(() => {
@@ -148,9 +156,10 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
     }
   };
 
+  if (!mounted) return null;
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div
       ref={containerRef}
       onClick={handleBackdropClick}
@@ -181,7 +190,7 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
           )}
           <button
             onClick={onClose}
-            className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground border border-border/60 px-2 py-1 rounded bg-background shrink-0 select-none hidden sm:block"
+            className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground border border-border/60 px-2 py-1 rounded bg-background shrink-0 select-none hidden sm:inline-flex"
           >
             Esc
           </button>
@@ -217,7 +226,7 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
                       <button
                         key={idx}
                         onClick={() => setQuery(search)}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-border/60 bg-muted/20 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-all duration-150"
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-border/60 bg-muted/20 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/40 transition-colors duration-150"
                       >
                         <Clock className="h-3 w-3 text-muted-foreground/60" />
                         <span>{search}</span>
@@ -256,16 +265,16 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
                   onClose();
                 }}
                 onMouseEnter={() => setActiveIndex(idx)}
-                className={`group flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all duration-200 ${
-                  idx === activeIndex
-                    ? "border-primary bg-primary/[0.03] shadow-md shadow-primary/[0.01]"
-                    : "border-border/30 bg-muted/5 hover:bg-muted/10 hover:border-border/60"
-                }`}
+                className={`group flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all duration-200 ${idx === activeIndex
+                  ? "border-primary bg-primary/[0.03] shadow-md shadow-primary/[0.01]"
+                  : "border-border/30 bg-muted/5 hover:bg-muted/10 hover:border-border/60"
+                  }`}
               >
                 <div className="flex items-start gap-3 min-w-0 flex-1">
-                  <FileText className={`h-4 w-4 mt-0.5 shrink-0 transition-colors duration-150 ${
-                    idx === activeIndex ? "text-primary" : "text-muted-foreground/60"
-                  }`} />
+                  <FileText
+                    className={`h-4 w-4 mt-0.5 shrink-0 transition-colors duration-150 ${idx === activeIndex ? "text-primary" : "text-muted-foreground/60"
+                      }`}
+                  />
                   <div className="min-w-0 flex-1">
                     <div className="text-xs font-bold text-muted-foreground/90 uppercase tracking-wide mb-0.5">
                       {article.category}
@@ -283,9 +292,10 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
                   <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest bg-muted/50 border border-border px-1.5 py-0.5 rounded">
                     Open
                   </span>
-                  <CornerDownLeft className={`h-3.5 w-3.5 transition-transform duration-200 ${
-                    idx === activeIndex ? "translate-x-0.5 text-primary" : "text-muted-foreground/40"
-                  }`} />
+                  <CornerDownLeft
+                    className={`h-3.5 w-3.5 transition-transform duration-200 ${idx === activeIndex ? "translate-x-0.5 text-primary" : "text-muted-foreground/40"
+                      }`}
+                  />
                 </div>
               </div>
             ))
@@ -320,6 +330,7 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

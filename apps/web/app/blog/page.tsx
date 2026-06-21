@@ -9,7 +9,7 @@ import { getAllArticles, getAllTags, getAllCategories, slugify } from "@/lib/con
 import { Tag, FolderOpen, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Blog | Frontend Expert",
+  title: "Blog",
   description:
     "Explore in-depth technical articles on React, performance, CSS, accessibility, build tools, and modern frontend architecture.",
 };

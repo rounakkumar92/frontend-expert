@@ -19,12 +19,12 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 
   if (!category) {
     return {
-      title: "Category Not Found | Frontend Expert",
+      title: "Category Not Found",
     };
   }
 
   return {
-    title: `${category.name} Articles | Frontend Expert`,
+    title: `${category.name} Articles`,
     description: `Read technical articles, research papers, and deep dives under the ${category.name} category on Frontend Expert.`,
   };
 }

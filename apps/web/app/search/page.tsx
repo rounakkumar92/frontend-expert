@@ -6,7 +6,7 @@ import { SearchPageClient } from "./SearchPageClient";
 import { Search } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Search Publications | Frontend Expert",
+  title: "Search Publications",
   description: "Search technical articles, deep dives, tags, and categories on modern frontend engineering.",
 };
 

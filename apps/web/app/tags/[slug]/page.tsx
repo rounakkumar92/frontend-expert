@@ -19,12 +19,12 @@ export async function generateMetadata({ params }: TagPageProps): Promise<Metada
 
   if (!tag) {
     return {
-      title: "Tag Not Found | Frontend Expert",
+      title: "Tag Not Found",
     };
   }
 
   return {
-    title: `Articles tagged with #${tag.name} | Frontend Expert`,
+    title: `Articles tagged with #${tag.name}`,
     description: `Read technical articles, research papers, and deep dives tagged with #${tag.name} on Frontend Expert.`,
   };
 }

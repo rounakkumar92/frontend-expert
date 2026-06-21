@@ -20,23 +20,34 @@ interface BlogPageProps {
 export async function generateMetadata({ params }: BlogPageProps): Promise<Metadata> {
   const { slug } = await params;
   const article = await getArticleBySlug(slug);
+  const baseUrl = "https://frontendexpert.com";
 
   if (!article) {
     return {
-      title: "Article Not Found | Frontend Expert",
+      title: "Article Not Found",
     };
   }
 
   return {
-    title: `${article.title} | Frontend Expert Journal`,
+    title: article.title,
     description: article.excerpt,
+    alternates: {
+      canonical: `/blog/${slug}`,
+    },
     openGraph: {
       title: article.title,
       description: article.excerpt,
+      url: `${baseUrl}/blog/${slug}`,
       type: "article",
       publishedTime: article.publishedAt,
       authors: [article.author.name],
       tags: article.tags,
+      siteName: "Frontend Expert",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: article.title,
+      description: article.excerpt,
     },
   };
 }
@@ -62,8 +73,71 @@ export default async function BlogPage({ params }: BlogPageProps) {
 
   const relatedArticles = await getRelatedArticles(article, 2);
 
+  const baseUrl = "https://frontendexpert.com";
+
+  // JSON-LD: TechArticle schema
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    headline: title,
+    description: excerpt,
+    datePublished: publishedAt,
+    author: {
+      "@type": "Person",
+      name: author.name,
+      ...(author.avatarUrl ? { image: author.avatarUrl } : {}),
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Frontend Expert",
+      url: baseUrl,
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${baseUrl}/blog/${slug}`,
+    },
+    keywords: tags.join(", "),
+    articleSection: category,
+  };
+
+  // JSON-LD: Breadcrumb schema
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: baseUrl,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Blog",
+        item: `${baseUrl}/blog`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: title,
+        item: `${baseUrl}/blog/${slug}`,
+      },
+    ],
+  };
+
   return (
     <div className="relative py-8 sm:py-12 md:py-16 bg-background scroll-smooth">
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+
       {/* Scroll indicator timeline */}
       <ReadingProgress />
 
@@ -129,10 +203,8 @@ export default async function BlogPage({ params }: BlogPageProps) {
 
         {/* 4. Article Main Layout: 12-column grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 items-start">
-          
           {/* A. Sidebar Side-rail (Columns: 3/12 - Desktop) */}
           <aside className="lg:col-span-3 space-y-10 lg:sticky lg:top-24">
-            <TableOfContents content={content} />
             <ShareActions title={title} slug={slug} />
           </aside>
 

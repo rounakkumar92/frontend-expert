@@ -6,7 +6,7 @@ import { getAllTags } from "@/lib/content";
 import { Tag, ArrowLeft, Hash } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Tags | Frontend Expert",
+  title: "Tags",
   description:
     "Browse all article tags across the Frontend Expert engineering journal.",
 };

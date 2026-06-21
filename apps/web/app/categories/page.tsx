@@ -6,7 +6,7 @@ import { getAllCategories } from "@/lib/content";
 import { FolderOpen, ArrowLeft, ArrowRight, Layers } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Categories | Frontend Expert",
+  title: "Categories",
   description:
     "Browse articles by category, including React, Performance, CSS, Modern Web Platform, and more.",
 };

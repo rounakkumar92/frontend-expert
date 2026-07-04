@@ -12,22 +12,75 @@ interface MobileNavProps {
 
 export function MobileNav({ navItems }: MobileNavProps) {
   const [isOpen, setIsOpen] = React.useState(false);
+  const toggleButtonRef = React.useRef<HTMLButtonElement>(null);
+  const containerRef = React.useRef<HTMLDivElement>(null);
 
-  // Prevent scroll when mobile menu is open
+  // Keyboard controls & focus trapping when drawer is open
   React.useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
+
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          setIsOpen(false);
+          toggleButtonRef.current?.focus();
+        }
+
+        if (e.key === "Tab") {
+          const container = containerRef.current;
+          if (!container) return;
+
+          const focusableSelector =
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+          const focusableElements = Array.from(
+            container.querySelectorAll<HTMLElement>(focusableSelector)
+          ).filter((el) => el.offsetWidth > 0 || el.offsetHeight > 0);
+
+          if (focusableElements.length > 0) {
+            // Include the toggle button in the cycle if it's z-index 50 (active/visible)
+            const elements = [...focusableElements];
+            if (toggleButtonRef.current && !elements.includes(toggleButtonRef.current)) {
+              elements.unshift(toggleButtonRef.current);
+            }
+
+            const activeIdx = elements.indexOf(document.activeElement as HTMLElement);
+            const firstEl = elements[0];
+            const lastEl = elements[elements.length - 1];
+
+            if (firstEl && lastEl) {
+              if (e.shiftKey) {
+                // Shift + Tab (Backward)
+                if (activeIdx === 0 || document.activeElement === firstEl) {
+                  lastEl.focus();
+                  e.preventDefault();
+                }
+              } else {
+                // Tab (Forward)
+                if (activeIdx === elements.length - 1 || document.activeElement === lastEl) {
+                  firstEl.focus();
+                  e.preventDefault();
+                }
+              }
+            }
+          }
+        }
+      };
+
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        window.removeEventListener("keydown", handleKeyDown);
+        document.body.style.overflow = "unset";
+      };
     } else {
       document.body.style.overflow = "unset";
     }
-    return () => {
-      document.body.style.overflow = "unset";
-    };
   }, [isOpen]);
 
   return (
     <div className="flex md:hidden items-center">
       <button
+        ref={toggleButtonRef}
         onClick={() => setIsOpen(!isOpen)}
         className="relative z-50 flex items-center justify-center h-9 w-9 rounded-lg border border-border bg-card text-foreground hover:bg-muted hover:text-primary transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring"
         aria-expanded={isOpen}
@@ -44,9 +97,11 @@ export function MobileNav({ navItems }: MobileNavProps) {
       {/* Overlay Backdrop Drawer */}
       {isOpen && (
         <div 
+          ref={containerRef}
           className="fixed inset-0 top-0 left-0 z-40 w-screen h-screen bg-background/98 dark:bg-background/99 backdrop-blur-xl flex flex-col justify-between animate-fade-in"
           role="dialog"
           aria-modal="true"
+          aria-label="Navigation menu"
         >
           <Container className="pt-24 pb-12 flex flex-col justify-between h-full">
             {/* Nav Items list */}

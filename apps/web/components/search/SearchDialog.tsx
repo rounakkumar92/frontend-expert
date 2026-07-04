@@ -5,7 +5,6 @@ import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { Search, X, Command, CornerDownLeft, ArrowUpDown, Clock, History, FileText, Trash2 } from "lucide-react";
 import { Article } from "@/lib/types";
-import { slugify } from "@/lib/utils";
 import { Highlight } from "./Highlight";
 
 interface SearchDialogProps {
@@ -22,6 +21,7 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const previousActiveElementRef = useRef<HTMLElement | null>(null);
 
   // Mounted check (avoid SSR mismatch)
   const [mounted, setMounted] = useState(false);
@@ -33,6 +33,7 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
   // 1. Fetch search index dynamically on open/focus
   useEffect(() => {
     if (isOpen) {
+      previousActiveElementRef.current = document.activeElement as HTMLElement;
       setIsLoading(true);
       fetch("/api/search")
         .then((res) => res.json())
@@ -64,6 +65,10 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
       document.body.style.overflow = "";
       setQuery("");
       setActiveIndex(0);
+      if (previousActiveElementRef.current) {
+        previousActiveElementRef.current.focus();
+        previousActiveElementRef.current = null;
+      }
     }
 
     return () => {
@@ -120,6 +125,38 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
         onClose();
       }
 
+      if (e.key === "Tab") {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const focusableSelector =
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+        const focusableElements = Array.from(
+          container.querySelectorAll<HTMLElement>(focusableSelector)
+        ).filter((el) => el.offsetWidth > 0 || el.offsetHeight > 0);
+
+        if (focusableElements.length > 0) {
+          const firstElement = focusableElements[0];
+          const lastElement = focusableElements[focusableElements.length - 1];
+
+          if (firstElement && lastElement) {
+            if (e.shiftKey) {
+              // Shift + Tab (Backward)
+              if (document.activeElement === firstElement) {
+                lastElement.focus();
+                e.preventDefault();
+              }
+            } else {
+              // Tab (Forward)
+              if (document.activeElement === lastElement) {
+                firstElement.focus();
+                e.preventDefault();
+              }
+            }
+          }
+        }
+      }
+
       if (e.key === "ArrowDown") {
         e.preventDefault();
         setActiveIndex((prev) => (filtered.length > 0 ? (prev + 1) % filtered.length : 0));
@@ -166,6 +203,7 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
       className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh] px-4 bg-background/50 dark:bg-black/60 backdrop-blur-md transition-all duration-300 animate-fade-in"
       role="dialog"
       aria-modal="true"
+      aria-label="Search publications"
     >
       <div className="w-full max-w-2xl border border-border/60 bg-card/85 dark:bg-card/40 rounded-2xl glass shadow-2xl overflow-hidden flex flex-col max-h-[60vh] animate-scale-up">
         {/* Search Input Bar */}

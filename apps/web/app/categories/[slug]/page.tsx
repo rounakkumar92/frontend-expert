@@ -3,9 +3,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/ui/container";
-import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ArticleCard } from "@/components/ArticleCard";
-import { getArticlesByCategory, getAllCategories, slugify } from "@/lib/content";
+import { getArticlesByCategory, getAllCategories } from "@/lib/content";
 import { ArrowLeft, FolderOpen } from "lucide-react";
 
 interface CategoryPageProps {

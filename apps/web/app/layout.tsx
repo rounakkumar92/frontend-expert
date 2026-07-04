@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     template: "%s | Frontend Expert",
     default: "Frontend Expert | Master Modern Web Development",
   },
-  description: "Empelling developers with premium, structured, hands-on learning resources for master class frontend engineering.",
+  description: "Empowering developers with premium, structured, hands-on learning resources for master class frontend engineering.",
   alternates: {
     canonical: "/",
     types: {
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Frontend Expert",
-    description: "Empelling developers with premium, structured, hands-on learning resources for master class frontend engineering.",
+    description: "Empowering developers with premium, structured, hands-on learning resources for master class frontend engineering.",
     url: "https://frontendexpert.com",
     siteName: "Frontend Expert",
     locale: "en_US",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Frontend Expert",
-    description: "Empelling developers with premium, structured, hands-on learning resources for master class frontend engineering.",
+    description: "Empowering developers with premium, structured, hands-on learning resources for master class frontend engineering.",
   },
 };
 

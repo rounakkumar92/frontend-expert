@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { Check, Copy, FileCode } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface CodeBlockProps {
   code: string;
@@ -24,7 +23,7 @@ export function CodeBlock({ code, language = "typescript", filename }: CodeBlock
   };
 
   const highlightCode = (rawCode: string, lang: string) => {
-    let escaped = rawCode
+    const escaped = rawCode
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
@@ -69,14 +68,14 @@ export function CodeBlock({ code, language = "typescript", filename }: CodeBlock
     if (lang === "bash" || lang === "sh" || lang === "shell") {
       return escaped
         .replace(
-          /(^|[^a-zA-Z0-9_\-\/])(npm|pnpm|yarn|npx|git|curl|wget|cd|mkdir|rm|ls|cat|echo)\b/g,
+          new RegExp("(^|[^a-zA-Z0-9_/-])(npm|pnpm|yarn|npx|git|curl|wget|cd|mkdir|rm|ls|cat|echo)\\b", "g"),
           `$1${wrap("text-violet-500 dark:text-violet-400 font-bold", "$2")}`
         )
         .replace(
-          /(^|[^a-zA-Z0-9_\-\/])(run|install|add|commit|push|pull|clone|checkout|init|build|dev)\b/g,
+          new RegExp("(^|[^a-zA-Z0-9_/-])(run|install|add|commit|push|pull|clone|checkout|init|build|dev)\\b", "g"),
           `$1${wrap("text-blue-500 dark:text-blue-400 font-medium", "$2")}`
         )
-        .replace(/(\s-[a-zA-Z0-9\-]+|\s--[a-zA-Z0-9\-]+)/g, wrap("text-amber-500 font-normal", "$1"))
+        .replace(/(\s-[a-zA-Z0-9-]+|\s--[a-zA-Z0-9-]+)/g, wrap("text-amber-500 font-normal", "$1"))
         .replace(/("[^"]*")/g, wrap("text-accent dark:text-teal-400 font-medium", "$1"))
         .replace(/(#.*)/g, wrap("text-muted-foreground/60 italic", "$1"));
     }
@@ -84,15 +83,15 @@ export function CodeBlock({ code, language = "typescript", filename }: CodeBlock
     if (lang === "css") {
       return escaped
         .replace(
-          /([a-zA-Z0-9_\-\.\#\:\,\s]+)(?=\s*\{)/g,
+          /([a-zA-Z0-9_.,#:\s-]+)(?=\s*\{)/g,
           wrap("text-violet-500 dark:text-violet-400 font-bold", "$1")
         )
         .replace(
-          /([a-zA-Z\-]+)(?=\s*\:)/g,
+          /([a-zA-Z-]+)(?=\s*:)/g,
           wrap("text-blue-500 dark:text-blue-400 font-medium", "$1")
         )
         .replace(
-          /(\:\s*)([a-zA-Z0-9\-\(\)\s\,\#\%\.]+)(?=;|\})/g,
+          /(:\s*)([a-zA-Z0-9(),#%.\s-]+)(?=;|\})/g,
           (_, p1, p2) => `${p1}${wrap("text-accent dark:text-teal-400 font-medium", p2)}`
         )
         .replace(/(\/\*[\s\S]*?\*\/)/g, wrap("text-muted-foreground/60 italic font-normal", "$1"));
@@ -100,9 +99,9 @@ export function CodeBlock({ code, language = "typescript", filename }: CodeBlock
 
     if (lang === "html" || lang === "xml") {
       return escaped
-        .replace(/(&lt;\/?[a-zA-Z0-9\-]+)/g, wrap("text-violet-500 dark:text-violet-400 font-semibold", "$1"))
+        .replace(/(&lt;\/?[a-zA-Z0-9-]+)/g, wrap("text-violet-500 dark:text-violet-400 font-semibold", "$1"))
         .replace(/(\/?&gt;)/g, wrap("text-violet-500 dark:text-violet-400 font-semibold", "$1"))
-        .replace(/\b([a-zA-Z\-]+)(?=\s*=\s*")/g, wrap("text-blue-500 dark:text-blue-400 font-medium", "$1"))
+        .replace(/\b([a-zA-Z-]+)(?=\s*=\s*")/g, wrap("text-blue-500 dark:text-blue-400 font-medium", "$1"))
         .replace(/("[^"]*")/g, wrap("text-accent dark:text-teal-400 font-medium", "$1"));
     }
 

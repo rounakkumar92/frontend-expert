@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Calendar, Clock, ArrowRight } from "lucide-react";
+import { Calendar, Clock } from "lucide-react";
 import { Article } from "@/lib/types";
 import { slugify } from "@/lib/utils";
 import { Highlight } from "./Highlight";

@@ -9,12 +9,10 @@ export async function GET() {
     const itemsXml = articles
       .map((article) => {
         let pubDate = new Date().toUTCString();
-        try {
-          const parsed = new Date(article.publishedAt);
-          if (!isNaN(parsed.getTime())) {
-            pubDate = parsed.toUTCString();
-          }
-        } catch {}
+        const parsed = new Date(article.publishedAt);
+        if (!isNaN(parsed.getTime())) {
+          pubDate = parsed.toUTCString();
+        }
 
         const link = `${baseUrl}/blog/${article.slug}`;
         const tagsXml = article.tags

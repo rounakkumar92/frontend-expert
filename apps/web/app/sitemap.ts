@@ -17,12 +17,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const articles = await getAllArticles();
   const articlePages = articles.map((article) => {
     let date = new Date();
-    try {
-      const parsed = new Date(article.publishedAt);
-      if (!isNaN(parsed.getTime())) {
-        date = parsed;
-      }
-    } catch {}
+    const parsed = new Date(article.publishedAt);
+    if (!isNaN(parsed.getTime())) {
+      date = parsed;
+    }
     
     return {
       url: `${baseUrl}/blog/${article.slug}`,

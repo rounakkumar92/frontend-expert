@@ -64,7 +64,10 @@ const mdxComponents = {
     const firstChild = childrenArray[0];
 
     if (React.isValidElement(firstChild)) {
-      const firstChildProps = firstChild.props as any;
+      interface BlockquoteChildProps {
+        children?: string | React.ReactNode[];
+      }
+      const firstChildProps = firstChild.props as BlockquoteChildProps;
       let textContent = "";
 
       if (Array.isArray(firstChildProps.children)) {
@@ -95,9 +98,17 @@ const mdxComponents = {
         }
 
         if (type) {
-          const remainingChildren = Array.isArray(firstChildProps.children)
-            ? [firstChildProps.children[0].replace(prefix, "").trim(), ...firstChildProps.children.slice(1)]
-            : firstChildProps.children.replace(prefix, "").trim();
+          const rawChildren = firstChildProps.children;
+          const remainingChildren = Array.isArray(rawChildren)
+            ? [
+                typeof rawChildren[0] === "string"
+                  ? rawChildren[0].replace(prefix, "").trim()
+                  : rawChildren[0],
+                ...rawChildren.slice(1),
+              ]
+            : typeof rawChildren === "string"
+              ? rawChildren.replace(prefix, "").trim()
+              : rawChildren;
 
           return <Callout type={type}>{remainingChildren}</Callout>;
         }

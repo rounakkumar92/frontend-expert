@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { getAllArticles } from "@/lib/content";
 import { SearchPageClient } from "./SearchPageClient";
-import { Search } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Search Publications",

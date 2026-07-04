@@ -9,7 +9,7 @@ import { ShareActions } from "@/components/article/ShareActions";
 import { ArticleCard } from "@/components/ArticleCard";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getArticleBySlug, getAllArticles, getRelatedArticles, slugify } from "@/lib/content";
-import { Calendar, Clock, ArrowLeft, User } from "lucide-react";
+import { Calendar, Clock, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 interface BlogPageProps {

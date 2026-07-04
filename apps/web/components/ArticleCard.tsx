@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
 import { Article } from "@/lib/types";
-import { cn, slugify } from "@/lib/utils";
+import { slugify } from "@/lib/utils";
 
 interface ArticleCardProps {
   article?: Article;

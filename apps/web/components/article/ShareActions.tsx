@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Link2, Twitter, Linkedin, Check } from "lucide-react";
-import { cn } from "@/lib/utils";
+
 
 interface ShareActionsProps {
   title: string;

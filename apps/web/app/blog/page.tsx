@@ -5,7 +5,7 @@ import { Container } from "@/components/ui/container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { FeaturedArticleCard } from "@/components/FeaturedArticleCard";
 import { ArticleCard } from "@/components/ArticleCard";
-import { getAllArticles, getAllTags, getAllCategories, slugify } from "@/lib/content";
+import { getAllArticles, getAllTags, getAllCategories } from "@/lib/content";
 import { Tag, FolderOpen, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {

@@ -12,7 +12,7 @@ export function verifyCSRF(request: NextRequest): boolean {
 
   const origin = request.headers.get("origin");
   const referer = request.headers.get("referer");
-  const host = request.headers.get("host");
+  const hostHeader = request.headers.get("x-forwarded-host") || request.headers.get("host") || "";
 
   if (origin) {
     try {
@@ -20,8 +20,11 @@ export function verifyCSRF(request: NextRequest): boolean {
       if (process.env.NODE_ENV === "development" && originUrl.hostname === "localhost") {
         return true;
       }
-      const hostHeader = host || "";
-      if (originUrl.host === hostHeader || hostHeader.includes(originUrl.host)) {
+      if (
+        originUrl.host === hostHeader ||
+        hostHeader.includes(originUrl.host) ||
+        originUrl.host.includes(hostHeader)
+      ) {
         return true;
       }
       return false;
@@ -36,8 +39,11 @@ export function verifyCSRF(request: NextRequest): boolean {
       if (process.env.NODE_ENV === "development" && refererUrl.hostname === "localhost") {
         return true;
       }
-      const hostHeader = host || "";
-      if (refererUrl.host === hostHeader || hostHeader.includes(refererUrl.host)) {
+      if (
+        refererUrl.host === hostHeader ||
+        hostHeader.includes(refererUrl.host) ||
+        refererUrl.host.includes(hostHeader)
+      ) {
         return true;
       }
       return false;

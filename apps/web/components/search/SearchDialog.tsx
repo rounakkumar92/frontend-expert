@@ -7,6 +7,32 @@ import { Search, X, Command, CornerDownLeft, ArrowUpDown, Clock, History, FileTe
 import { Article } from "@/lib/types";
 import { Highlight } from "./Highlight";
 
+// Module-level cache: fetched once per page session, reused on every subsequent open.
+// Avoids re-hitting the database every time the search dialog is opened.
+let searchIndexCache: Article[] | null = null;
+let searchIndexPromise: Promise<Article[]> | null = null;
+
+async function fetchSearchIndex(): Promise<Article[]> {
+  if (searchIndexCache !== null) return searchIndexCache;
+  // Deduplicate concurrent calls (e.g. keyboard shortcut + button pressed together)
+  if (!searchIndexPromise) {
+    searchIndexPromise = fetch("/api/search")
+      .then((res) => res.json())
+      .then((data: unknown) => {
+        const articles = Array.isArray(data) ? (data as Article[]) : [];
+        searchIndexCache = articles;
+        searchIndexPromise = null;
+        return articles;
+      })
+      .catch((err) => {
+        console.error("Failed to load search index", err);
+        searchIndexPromise = null;
+        return [];
+      });
+  }
+  return searchIndexPromise;
+}
+
 interface SearchDialogProps {
   isOpen: boolean;
   onClose: () => void;
@@ -30,23 +56,22 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
     return () => setMounted(false);
   }, []);
 
-  // 1. Fetch search index dynamically on open/focus
+  // 1. Load search index on open — served from module-level cache after first fetch
   useEffect(() => {
     if (isOpen) {
       previousActiveElementRef.current = document.activeElement as HTMLElement;
-      setIsLoading(true);
-      fetch("/api/search")
-        .then((res) => res.json())
-        .then((data) => {
-          if (Array.isArray(data)) {
-            setArticles(data);
-          }
-          setIsLoading(false);
-        })
-        .catch((err) => {
-          console.error("Failed to load search index", err);
+
+      if (searchIndexCache !== null) {
+        // Already cached — use immediately, no loading state needed
+        setArticles(searchIndexCache);
+      } else {
+        // First open: fetch from API and populate the cache
+        setIsLoading(true);
+        fetchSearchIndex().then((data) => {
+          setArticles(data);
           setIsLoading(false);
         });
+      }
 
       // Load recent searches from localStorage
       try {

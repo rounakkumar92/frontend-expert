@@ -28,7 +28,14 @@ export function CodeBlock({ code, language = "typescript", filename }: CodeBlock
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
 
-    const wrap = (cls: string, content: string) => `<span class="${cls}">${content}</span>`;
+    const tokens: string[] = [];
+    const saveToken = (html: string) => {
+      const id = `___TOKEN_${tokens.length}___`;
+      tokens.push(html);
+      return id;
+    };
+
+    let processed = escaped;
 
     if (
       lang === "typescript" ||
@@ -38,74 +45,67 @@ export function CodeBlock({ code, language = "typescript", filename }: CodeBlock
       lang === "tsx" ||
       lang === "jsx"
     ) {
-      return escaped
-        .replace(
-          /\b(const|let|var|function|return|import|export|from|default|class|extends|type|interface|async|await|try|catch|new|typeof|instanceof|as|public|private|static|readonly|keyof|void)\b/g,
-          wrap("text-violet-500 dark:text-violet-400 font-semibold", "$1")
-        )
-        .replace(
-          /\b(if|else|for|while|switch|case|break|continue|true|false|null|undefined)\b/g,
-          wrap("text-amber-500 font-semibold", "$1")
-        )
-        .replace(
-          /\b([a-zA-Z0-9_]+)(?=\()/g,
-          wrap("text-blue-500 dark:text-blue-400 font-medium", "$1")
-        )
-        .replace(/(\/\/.*)/g, wrap("text-muted-foreground/60 italic font-normal", "$1"))
-        .replace(/("[^"]*")/g, wrap("text-accent dark:text-teal-400 font-medium", "$1"))
-        .replace(/('[^']*')/g, wrap("text-accent dark:text-teal-400 font-medium", "$1"))
-        .replace(/(`[^`]*`)/g, wrap("text-accent dark:text-teal-400 font-medium", "$1"));
+      // 1. Comments first
+      processed = processed.replace(/(\/\/.*$|\/\*[\s\S]*?\*\/)/gm, (match) =>
+        saveToken(`<span class="text-muted-foreground/60 italic font-normal">${match}</span>`)
+      );
+      // 2. Strings next
+      processed = processed.replace(/("[^"]*"|'[^']*'|`[^`]*`)/g, (match) =>
+        saveToken(`<span class="text-accent dark:text-teal-400 font-medium">${match}</span>`)
+      );
+      // 3. Keywords
+      processed = processed.replace(
+        /\b(const|let|var|function|return|import|export|from|default|class|extends|type|interface|async|await|try|catch|new|typeof|instanceof|as|public|private|static|readonly|keyof|void)\b/g,
+        (match) => saveToken(`<span class="text-violet-500 dark:text-violet-400 font-semibold">${match}</span>`)
+      );
+      // 4. Control flow & booleans
+      processed = processed.replace(
+        /\b(if|else|for|while|switch|case|break|continue|true|false|null|undefined)\b/g,
+        (match) => saveToken(`<span class="text-amber-500 font-semibold">${match}</span>`)
+      );
+      // 5. Function calls
+      processed = processed.replace(
+        /\b([a-zA-Z0-9_]+)(?=\()/g,
+        (match) => saveToken(`<span class="text-blue-500 dark:text-blue-400 font-medium">${match}</span>`)
+      );
+    } else if (lang === "json") {
+      processed = processed.replace(/("[^"]*")(\s*:)/g, (_, p1, p2) =>
+        `${saveToken(`<span class="text-blue-500 dark:text-blue-400 font-semibold">${p1}</span>`)}${p2}`
+      );
+      processed = processed.replace(/:(\s*)("[^"]*")/g, (_, p1, p2) =>
+        `:${p1}${saveToken(`<span class="text-accent dark:text-teal-400 font-medium">${p2}</span>`)}`
+      );
+      processed = processed.replace(/:(\s*)(-?\d+\.?\d*)/g, (_, p1, p2) =>
+        `:${p1}${saveToken(`<span class="text-violet-500 dark:text-violet-400">${p2}</span>`)}`
+      );
+      processed = processed.replace(/:(\s*)(true|false|null)/g, (_, p1, p2) =>
+        `:${p1}${saveToken(`<span class="text-amber-500 font-semibold">${p2}</span>`)}`
+      );
+    } else if (lang === "bash" || lang === "sh" || lang === "shell") {
+      processed = processed.replace(/(#.*$)/gm, (match) =>
+        saveToken(`<span class="text-muted-foreground/60 italic">${match}</span>`)
+      );
+      processed = processed.replace(/("[^"]*"|'[^']*')/g, (match) =>
+        saveToken(`<span class="text-accent dark:text-teal-400 font-medium">${match}</span>`)
+      );
+      processed = processed.replace(
+        new RegExp("(^|[^a-zA-Z0-9_/-])(npm|pnpm|yarn|npx|git|curl|wget|cd|mkdir|rm|ls|cat|echo)\\b", "g"),
+        (_, p1, p2) => `${p1}${saveToken(`<span class="text-violet-500 dark:text-violet-400 font-bold">${p2}</span>`)}`
+      );
+      processed = processed.replace(
+        new RegExp("(^|[^a-zA-Z0-9_/-])(run|install|add|commit|push|pull|clone|checkout|init|build|dev)\\b", "g"),
+        (_, p1, p2) => `${p1}${saveToken(`<span class="text-blue-500 dark:text-blue-400 font-medium">${p2}</span>`)}`
+      );
+      processed = processed.replace(/(\s-[a-zA-Z0-9-]+|\s--[a-zA-Z0-9-]+)/g, (match) =>
+        saveToken(`<span class="text-amber-500 font-normal">${match}</span>`)
+      );
     }
 
-    if (lang === "json") {
-      return escaped
-        .replace(/("[^"]*")(\s*:)/g, `${wrap("text-blue-500 dark:text-blue-400 font-semibold", "$1")}$2`)
-        .replace(/:(\s*)("[^"]*")/g, `:$1${wrap("text-accent dark:text-teal-400 font-medium", "$2")}`)
-        .replace(/:(\s*)(-?\d+\.?\d*)/g, `:$1${wrap("text-violet-500 dark:text-violet-400", "$2")}`)
-        .replace(/:(\s*)(true|false|null)/g, `:$1${wrap("text-amber-500 font-semibold", "$2")}`);
-    }
+    tokens.forEach((html, i) => {
+      processed = processed.replace(`___TOKEN_${i}___`, html);
+    });
 
-    if (lang === "bash" || lang === "sh" || lang === "shell") {
-      return escaped
-        .replace(
-          new RegExp("(^|[^a-zA-Z0-9_/-])(npm|pnpm|yarn|npx|git|curl|wget|cd|mkdir|rm|ls|cat|echo)\\b", "g"),
-          `$1${wrap("text-violet-500 dark:text-violet-400 font-bold", "$2")}`
-        )
-        .replace(
-          new RegExp("(^|[^a-zA-Z0-9_/-])(run|install|add|commit|push|pull|clone|checkout|init|build|dev)\\b", "g"),
-          `$1${wrap("text-blue-500 dark:text-blue-400 font-medium", "$2")}`
-        )
-        .replace(/(\s-[a-zA-Z0-9-]+|\s--[a-zA-Z0-9-]+)/g, wrap("text-amber-500 font-normal", "$1"))
-        .replace(/("[^"]*")/g, wrap("text-accent dark:text-teal-400 font-medium", "$1"))
-        .replace(/(#.*)/g, wrap("text-muted-foreground/60 italic", "$1"));
-    }
-
-    if (lang === "css") {
-      return escaped
-        .replace(
-          /([a-zA-Z0-9_.,#:\s-]+)(?=\s*\{)/g,
-          wrap("text-violet-500 dark:text-violet-400 font-bold", "$1")
-        )
-        .replace(
-          /([a-zA-Z-]+)(?=\s*:)/g,
-          wrap("text-blue-500 dark:text-blue-400 font-medium", "$1")
-        )
-        .replace(
-          /(:\s*)([a-zA-Z0-9(),#%.\s-]+)(?=;|\})/g,
-          (_, p1, p2) => `${p1}${wrap("text-accent dark:text-teal-400 font-medium", p2)}`
-        )
-        .replace(/(\/\*[\s\S]*?\*\/)/g, wrap("text-muted-foreground/60 italic font-normal", "$1"));
-    }
-
-    if (lang === "html" || lang === "xml") {
-      return escaped
-        .replace(/(&lt;\/?[a-zA-Z0-9-]+)/g, wrap("text-violet-500 dark:text-violet-400 font-semibold", "$1"))
-        .replace(/(\/?&gt;)/g, wrap("text-violet-500 dark:text-violet-400 font-semibold", "$1"))
-        .replace(/\b([a-zA-Z-]+)(?=\s*=\s*")/g, wrap("text-blue-500 dark:text-blue-400 font-medium", "$1"))
-        .replace(/("[^"]*")/g, wrap("text-accent dark:text-teal-400 font-medium", "$1"));
-    }
-
-    return escaped;
+    return processed;
   };
 
   return (

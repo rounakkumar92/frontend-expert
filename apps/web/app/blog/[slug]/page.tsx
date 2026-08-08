@@ -9,6 +9,7 @@ import { ShareActions } from "@/components/article/ShareActions";
 import { ArticleCard } from "@/components/ArticleCard";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getArticleBySlug, getAllArticles, getRelatedArticles, slugify } from "@/lib/content";
+import { getSiteUrl } from "@/lib/site";
 import { Calendar, Clock, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
@@ -20,7 +21,7 @@ interface BlogPageProps {
 export async function generateMetadata({ params }: BlogPageProps): Promise<Metadata> {
   const { slug } = await params;
   const article = await getArticleBySlug(slug);
-  const baseUrl = "https://frontendexpert.com";
+  const baseUrl = getSiteUrl();
 
   if (!article) {
     return {
@@ -73,7 +74,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
 
   const relatedArticles = await getRelatedArticles(article, 2);
 
-  const baseUrl = "https://frontendexpert.com";
+  const baseUrl = getSiteUrl();
 
   // JSON-LD: TechArticle schema
   const articleSchema = {
@@ -206,6 +207,7 @@ export default async function BlogPage({ params }: BlogPageProps) {
           {/* A. Sidebar Side-rail (Columns: 3/12 - Desktop) */}
           <aside className="lg:col-span-3 space-y-10 lg:sticky lg:top-24">
             <ShareActions title={title} slug={slug} />
+            <TableOfContents content={content} />
           </aside>
 
           {/* B. Central Reading Canvas (Columns: 9/12) */}

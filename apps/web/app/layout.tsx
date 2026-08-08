@@ -14,8 +14,12 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
 });
 
+import { getSiteUrl } from "@/lib/site";
+
+const siteUrl = getSiteUrl();
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://frontendexpert.com"),
+  metadataBase: new URL(siteUrl),
   title: {
     template: "%s | Frontend Expert",
     default: "Frontend Expert | Master Modern Web Development",
@@ -32,7 +36,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Frontend Expert",
     description: "Empowering developers with premium, structured, hands-on learning resources for master class frontend engineering.",
-    url: "https://frontendexpert.com",
+    url: siteUrl,
     siteName: "Frontend Expert",
     locale: "en_US",
     type: "website",
@@ -48,10 +52,10 @@ const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   "name": "Frontend Expert",
-  "url": "https://frontendexpert.com",
+  "url": siteUrl,
   "potentialAction": {
     "@type": "SearchAction",
-    "target": "https://frontendexpert.com/search?q={search_term_string}",
+    "target": `${siteUrl}/search?q={search_term_string}`,
     "query-input": "required name=search_term_string",
   },
 };

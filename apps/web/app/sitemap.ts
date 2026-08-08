@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
 import { getAllArticles, getAllTags, getAllCategories } from "@/lib/content";
+import { getSiteUrl } from "@/lib/site";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://frontendexpert.com";
+  const baseUrl = getSiteUrl();
 
   // 1. Static Pages
   const staticRoutes = ["", "/blog", "/search", "/tags", "/categories"];

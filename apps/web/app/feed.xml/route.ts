@@ -1,7 +1,8 @@
 import { getAllArticles } from "@/lib/content";
+import { getSiteUrl } from "@/lib/site";
 
 export async function GET() {
-  const baseUrl = "https://frontendexpert.com";
+  const baseUrl = getSiteUrl();
 
   try {
     const articles = await getAllArticles();

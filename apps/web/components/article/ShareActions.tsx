@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Link2, Twitter, Linkedin, Check } from "lucide-react";
-
+import { getSiteUrl } from "@/lib/site";
 
 interface ShareActionsProps {
   title: string;
@@ -11,7 +11,7 @@ interface ShareActionsProps {
 
 export function ShareActions({ title, slug }: ShareActionsProps) {
   const [copied, setCopied] = useState(false);
-  const [origin, setOrigin] = useState("https://frontendexpert.com");
+  const [origin, setOrigin] = useState(() => getSiteUrl());
 
   useEffect(() => {
     if (typeof window !== "undefined") {

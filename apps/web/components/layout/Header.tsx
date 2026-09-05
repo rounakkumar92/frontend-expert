@@ -5,17 +5,9 @@ import Link from "next/link";
 import { Container } from "../ui/container";
 import { ThemeToggle } from "./ThemeToggle";
 import { MobileNav } from "./MobileNav";
-import { NavLink } from "./NavLink";
 import { Code2, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SearchDialog } from "../search/SearchDialog";
-
-const NAV_ITEMS = [
-  { label: "Courses", href: "/courses" },
-  { label: "Blog", href: "/blog" },
-  { label: "Community", href: "/community" },
-  { label: "Dashboard", href: "/dashboard" },
-];
 
 export function Header() {
   const [isScrolled, setIsScrolled] = React.useState(false);
@@ -66,15 +58,6 @@ export function Header() {
             </span>
           </Link>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center space-x-1">
-            {NAV_ITEMS.map((item) => (
-              <NavLink key={item.href} href={item.href}>
-                {item.label}
-              </NavLink>
-            ))}
-          </nav>
-
           {/* Right Action Menu */}
           <div className="hidden md:flex items-center space-x-3">
             <button
@@ -89,14 +72,23 @@ export function Header() {
               </kbd>
             </button>
             <ThemeToggle />
-            <Link
-              href="/login"
-              className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors duration-200"
+            {/* Author avatar — links to LinkedIn */}
+            <a
+              href="https://www.linkedin.com/in/rounak-kumar-644596153/"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Rounak Kumar on LinkedIn"
+              className="group relative flex h-8 w-8 shrink-0 rounded-full border-2 border-primary/30 hover:border-primary/70 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring shadow-sm"
             >
-              Sign In
-            </Link>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/rounak.png"
+                alt="Rounak Kumar"
+                className="h-full w-full rounded-full object-cover"
+              />
+            </a>
             <Link
-              href="/signup"
+              href="/blog"
               className="inline-flex h-8 items-center justify-center rounded-lg bg-primary px-3.5 text-xs font-semibold text-primary-foreground shadow-sm shadow-primary/15 hover:bg-primary/95 hover:shadow-md hover:shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring"
             >
               Get Started
@@ -113,7 +105,7 @@ export function Header() {
               <Search className="h-4.5 w-4.5" />
             </button>
             <ThemeToggle />
-            <MobileNav navItems={NAV_ITEMS} />
+            <MobileNav />
           </div>
         </div>
       </Container>

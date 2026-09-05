@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Container } from "@/components/ui/container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { TagPill } from "@/components/ui/TagPill";
@@ -8,7 +8,7 @@ import { FeaturedArticleCard } from "@/components/FeaturedArticleCard";
 import { ArticleCard } from "@/components/ArticleCard";
 import { MOCK_TRENDING_TAGS } from "@/lib/mock-data";
 import { Article } from "@/lib/types";
-import { Sparkles, Loader2, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { slugify } from "@/lib/utils";
 
@@ -21,15 +21,6 @@ export function ArticlesSection({
   initialFeaturedArticle,
   initialArticles,
 }: ArticlesSectionProps) {
-  const [isLoading, setIsLoading] = useState(false);
-
-  const simulateLoading = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-  };
-
   return (
     <>
       {/* 2. Featured Article Section */}
@@ -39,31 +30,11 @@ export function ArticlesSection({
             tag="Flagship Research"
             title="Latest Core Deep Dive"
             description="Our primary technical analysis outlining breaking web engine developments, runtime specifications, and architecture."
-            action={
-              <button
-                onClick={simulateLoading}
-                disabled={isLoading}
-                aria-label="Simulate future async article loading states"
-                className="inline-flex h-9 items-center justify-center rounded-xl border border-border bg-card/60 px-4 text-xs font-semibold text-muted-foreground glass hover:text-foreground hover:bg-muted hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 transition-all duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="h-3.5 w-3.5 mr-2 animate-spin text-primary" />
-                    <span>Loading Simulation...</span>
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="h-3.5 w-3.5 mr-2 text-accent" />
-                    <span>Preview Skeleton States</span>
-                  </>
-                )}
-              </button>
-            }
           />
           <div className="animate-fade-in-up">
             <FeaturedArticleCard
               article={initialFeaturedArticle}
-              skeleton={isLoading}
+              skeleton={false}
             />
           </div>
         </Container>
@@ -116,7 +87,7 @@ export function ArticlesSection({
               <div key={article.id} className="animate-fade-in-up">
                 <ArticleCard
                   article={article}
-                  skeleton={isLoading}
+                  skeleton={false}
                 />
               </div>
             ))}

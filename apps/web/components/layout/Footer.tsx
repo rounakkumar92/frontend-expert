@@ -7,7 +7,7 @@ export function Footer() {
   return (
     <footer className="border-t border-border/40 bg-card/5 py-12 md:py-16 text-xs text-muted-foreground transition-colors duration-300">
       <Container>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
           {/* Brand Col */}
           <div className="col-span-2 space-y-4 pr-0 md:pr-8">
             <Link href="/" className="flex items-center space-x-2 group focus:outline-none">
@@ -23,7 +23,7 @@ export function Footer() {
             </p>
             <div className="flex space-x-4 pt-1">
               <a
-                href="https://github.com"
+                href="https://github.com/rounakkumar92/"
                 target="_blank"
                 rel="noreferrer"
                 className="text-muted-foreground hover:text-foreground hover:scale-105 transition-all focus:outline-none focus:ring-1 focus:ring-ring rounded"
@@ -41,7 +41,7 @@ export function Footer() {
                 <Twitter className="h-4 w-4" />
               </a>
               <a
-                href="https://linkedin.com"
+                href="https://www.linkedin.com/in/rounak-kumar-644596153/"
                 target="_blank"
                 rel="noreferrer"
                 className="text-muted-foreground hover:text-foreground hover:scale-105 transition-all focus:outline-none focus:ring-1 focus:ring-ring rounded"
@@ -56,18 +56,9 @@ export function Footer() {
           <div className="space-y-3.5">
             <h4 className="font-bold text-foreground text-[10px] tracking-widest uppercase">Platform</h4>
             <ul className="space-y-2 font-medium">
-              <li><Link href="/courses" className="hover:text-foreground transition-colors duration-150 focus:outline-none">Courses</Link></li>
-              <li><Link href="/blog" className="hover:text-foreground transition-colors duration-150 focus:outline-none">Articles</Link></li>
-              <li><Link href="/challenges" className="hover:text-foreground transition-colors duration-150 focus:outline-none">Challenges</Link></li>
-            </ul>
-          </div>
-
-          <div className="space-y-3.5">
-            <h4 className="font-bold text-foreground text-[10px] tracking-widest uppercase">Community</h4>
-            <ul className="space-y-2 font-medium">
-              <li><Link href="/community" className="hover:text-foreground transition-colors duration-150 focus:outline-none">Join Discord</Link></li>
-              <li><Link href="/events" className="hover:text-foreground transition-colors duration-150 focus:outline-none">Virtual Events</Link></li>
-              <li><Link href="/partners" className="hover:text-foreground transition-colors duration-150 focus:outline-none">Partnerships</Link></li>
+              <li><Link href="/blog" className="hover:text-foreground transition-colors duration-150 focus:outline-none">All Articles</Link></li>
+              <li><Link href="/categories" className="hover:text-foreground transition-colors duration-150 focus:outline-none">Categories</Link></li>
+              <li><Link href="/tags" className="hover:text-foreground transition-colors duration-150 focus:outline-none">Tags</Link></li>
             </ul>
           </div>
 

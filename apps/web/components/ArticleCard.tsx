@@ -88,10 +88,10 @@ export function ArticleCard({ article, skeleton = false }: ArticleCardProps) {
             <img
               src={author.avatarUrl}
               alt={author.name}
-              className="h-6.5 w-6.5 rounded-full border border-border/60 object-cover"
+              className="h-7 w-7 rounded-full border border-border/60 object-cover shrink-0"
             />
           ) : (
-            <div className="h-6.5 w-6.5 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-[10px]">
+            <div className="h-7 w-7 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-[10px] shrink-0">
               {author.name.charAt(0)}
             </div>
           )}

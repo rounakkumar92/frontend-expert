@@ -10,7 +10,7 @@ import { ArticleCard } from "@/components/ArticleCard";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getArticleBySlug, getAllArticles, getRelatedArticles, slugify } from "@/lib/content";
 import { getSiteUrl } from "@/lib/site";
-import { Calendar, Clock, ArrowLeft } from "lucide-react";
+import { Calendar, Clock, ArrowLeft, Linkedin } from "lucide-react";
 import Link from "next/link";
 
 interface BlogPageProps {
@@ -250,14 +250,36 @@ export default async function BlogPage({ params }: BlogPageProps) {
                     {author.name.charAt(0)}
                   </div>
                 )}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-extrabold text-foreground text-base leading-none">
-                      Written by {author.name}
-                    </h3>
+                <div className="space-y-2 flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {author.linkedinUrl ? (
+                      <a
+                        href={author.linkedinUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-extrabold text-foreground text-base leading-none hover:text-primary transition-colors duration-150"
+                      >
+                        Written by {author.name}
+                      </a>
+                    ) : (
+                      <h3 className="font-extrabold text-foreground text-base leading-none">
+                        Written by {author.name}
+                      </h3>
+                    )}
                     <span className="text-[10px] uppercase font-bold tracking-widest text-primary/80 bg-primary/10 px-1.5 py-0.5 rounded border border-primary/15 leading-none">
                       Author
                     </span>
+                    {author.linkedinUrl && (
+                      <a
+                        href={author.linkedinUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label="LinkedIn Profile"
+                        className="inline-flex items-center justify-center h-5 w-5 rounded text-muted-foreground hover:text-[#0A66C2] transition-colors duration-150 focus:outline-none focus:ring-1 focus:ring-ring"
+                      >
+                        <Linkedin className="h-3.5 w-3.5" />
+                      </a>
+                    )}
                   </div>
                   <p className="text-xs text-muted-foreground/90 leading-relaxed font-normal">
                     {author.bio}

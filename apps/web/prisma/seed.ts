@@ -20,22 +20,22 @@ async function main() {
   const admin = await prisma.user.create({
     data: {
       email: "admin@frontendexpert.com",
-      name: "Alex Admin",
+      name: "Rounak Kumar",
       passwordHash: adminPassword,
       role: Role.ADMIN,
-      bio: "Lead Administrator and Systems Architect for Frontend Expert.",
-      avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face",
+      bio: "Core Systems Engineer specializing in React internals, compiler design, and rendering performance. Passionate about building developer tools and highly optimized user interfaces.",
+      avatarUrl: "/rounak.png",
     },
   });
 
   const author = await prisma.user.create({
     data: {
       email: "author@frontendexpert.com",
-      name: "Sarah Author",
+      name: "Rounak Kumar",
       passwordHash: authorPassword,
       role: Role.AUTHOR,
-      bio: "Senior Frontend Engineer specializing in Web Accessibility and React Performance.",
-      avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=face",
+      bio: "Core Systems Engineer specializing in React internals, compiler design, and rendering performance. Passionate about building developer tools and highly optimized user interfaces.",
+      avatarUrl: "/rounak.png",
     },
   });
 

@@ -2,22 +2,25 @@ import { Article, Author } from "./types";
 
 export const MOCK_AUTHORS: Record<"rounak" | "sarah" | "marcus", Author> = {
   rounak: {
-    name: "Rounak Sharma",
-    avatarUrl: "", // Falls back to first letter circle
+    name: "Rounak Kumar",
+    avatarUrl: "/rounak.png",
     role: "Core Systems Engineer",
     bio: "Core Systems Engineer specializing in React internals, compiler design, and rendering performance. Passionate about building developer tools and highly optimized user interfaces.",
+    linkedinUrl: "https://www.linkedin.com/in/rounak-kumar-644596153/",
   },
   sarah: {
-    name: "Sarah Jenkins",
-    avatarUrl: "",
-    role: "Web Performance Analyst",
-    bio: "Web Performance Analyst dedicated to diagnosing main-thread latency, optimizing Core Web Vitals, and lecturing globally on modern rendering cycles and yield scheduling.",
+    name: "Rounak Kumar",
+    avatarUrl: "/rounak.png",
+    role: "Core Systems Engineer",
+    bio: "Core Systems Engineer specializing in React internals, compiler design, and rendering performance. Passionate about building developer tools and highly optimized user interfaces.",
+    linkedinUrl: "https://www.linkedin.com/in/rounak-kumar-644596153/",
   },
   marcus: {
-    name: "Marcus Aurelius",
-    avatarUrl: "",
-    role: "Principal Frontend Architect",
-    bio: "Principal Frontend Architect with a decade of engineering experience building module federation systems, isolated state architectures, and scalable monorepo tooling.",
+    name: "Rounak Kumar",
+    avatarUrl: "/rounak.png",
+    role: "Core Systems Engineer",
+    bio: "Core Systems Engineer specializing in React internals, compiler design, and rendering performance. Passionate about building developer tools and highly optimized user interfaces.",
+    linkedinUrl: "https://www.linkedin.com/in/rounak-kumar-644596153/",
   },
 };
 
@@ -134,7 +137,7 @@ export const MOCK_ARTICLES: Article[] = [
     publishedAt: "May 18, 2026",
     readTime: "9 min read",
     category: "Performance",
-    author: MOCK_AUTHORS.sarah,
+    author: MOCK_AUTHORS.rounak,
     tags: ["Performance", "Web Vitals", "DevTools"],
     content: `Interaction to Next Paint (INP) is now a core ranking factor and Core Web Vital. Unlike First Input Delay (FID), which only measured the initial delay of the very first click, INP assesses the responsiveness of every single user interaction throughout the entire lifespan of the page.
 
@@ -213,7 +216,7 @@ By yielding execution frequently, you can keep the main thread fluid and respons
     publishedAt: "May 10, 2026",
     readTime: "14 min read",
     category: "Architecture",
-    author: MOCK_AUTHORS.marcus,
+    author: MOCK_AUTHORS.rounak,
     tags: ["Architecture", "Scale", "System Design"],
     content: `As development organizations scale, maintaining a massive, single-container monolithic frontend codebase becomes highly inefficient. Teams block each other on releases, testing pipelines become bottlenecks, and dependency updates turn into high-risk events.
 
@@ -291,7 +294,7 @@ Micro-frontends represent an excellent path forward for enterprise-scale platfor
     publishedAt: "May 02, 2026",
     readTime: "7 min read",
     category: "CSS & Design",
-    author: MOCK_AUTHORS.sarah,
+    author: MOCK_AUTHORS.rounak,
     tags: ["CSS", "Design Systems", "Web Standards"],
     content: `For decades, web layouts have relied on global viewport dimensions via Media Queries (@media). While effective, this model breaks down in component-driven architectures. A component doesn't care how wide the screen is—it only cares about the size of the slot it occupies.
 
@@ -441,7 +444,7 @@ Enforcing focus management makes your web platforms highly accessible and extrem
     publishedAt: "Apr 15, 2026",
     readTime: "11 min read",
     category: "Build Tools",
-    author: MOCK_AUTHORS.marcus,
+    author: MOCK_AUTHORS.rounak,
     tags: ["Build Tools", "Rust", "Vite"],
     content: `For almost ten years, Webpack has been the undisputed backbone of modern JavaScript compilation. However, as web applications grew to hundreds of thousands of lines of code, Webpack's JavaScript-based compiler became extremely slow.
 

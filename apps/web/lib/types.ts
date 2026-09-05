@@ -3,6 +3,7 @@ export interface Author {
   avatarUrl: string;
   role?: string;
   bio?: string;
+  linkedinUrl?: string;
 }
 
 export interface Article {

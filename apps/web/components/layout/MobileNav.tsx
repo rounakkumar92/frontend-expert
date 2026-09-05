@@ -2,27 +2,61 @@
 
 import React from "react";
 import { createPortal } from "react-dom";
-import { NavLink } from "./NavLink";
-import { Container } from "../ui/container";
-import { Menu, X } from "lucide-react";
+import {
+  Menu,
+  X,
+  BookOpen,
+  Layers,
+  Tag,
+  ArrowRight,
+  Linkedin,
+  Github,
+  Sparkles,
+} from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn, slugify } from "@/lib/utils";
+import { MOCK_TRENDING_TAGS } from "@/lib/mock-data";
 
-interface MobileNavProps {
-  navItems: { label: string; href: string }[];
-}
+const NAV_TILES = [
+  {
+    label: "Articles",
+    description: "Deep dive analyses",
+    href: "/blog",
+    icon: BookOpen,
+  },
+  {
+    label: "Categories",
+    description: "Browse by domain",
+    href: "/categories",
+    icon: Layers,
+  },
+  {
+    label: "Tags",
+    description: "Topic index",
+    href: "/tags",
+    icon: Tag,
+  },
+];
 
-export function MobileNav({ navItems }: MobileNavProps) {
+const POPULAR_TAGS = MOCK_TRENDING_TAGS.slice(0, 6);
+
+export function MobileNav() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
+  const pathname = usePathname();
   const toggleButtonRef = React.useRef<HTMLButtonElement>(null);
-  const containerRef = React.useRef<HTMLDivElement>(null);
 
-  // Ensure portal target is available after hydration
   React.useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Keyboard controls & focus trapping when drawer is open
+  // Close when pathname changes
+  React.useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
+
+  // Handle escape key & lock background scroll
   React.useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -32,45 +66,6 @@ export function MobileNav({ navItems }: MobileNavProps) {
           e.preventDefault();
           setIsOpen(false);
           toggleButtonRef.current?.focus();
-        }
-
-        if (e.key === "Tab") {
-          const container = containerRef.current;
-          if (!container) return;
-
-          const focusableSelector =
-            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
-          const focusableElements = Array.from(
-            container.querySelectorAll<HTMLElement>(focusableSelector)
-          ).filter((el) => el.offsetWidth > 0 || el.offsetHeight > 0);
-
-          if (focusableElements.length > 0) {
-            // Include the toggle button in the cycle if it's z-index 50 (active/visible)
-            const elements = [...focusableElements];
-            if (toggleButtonRef.current && !elements.includes(toggleButtonRef.current)) {
-              elements.unshift(toggleButtonRef.current);
-            }
-
-            const activeIdx = elements.indexOf(document.activeElement as HTMLElement);
-            const firstEl = elements[0];
-            const lastEl = elements[elements.length - 1];
-
-            if (firstEl && lastEl) {
-              if (e.shiftKey) {
-                // Shift + Tab (Backward)
-                if (activeIdx === 0 || document.activeElement === firstEl) {
-                  lastEl.focus();
-                  e.preventDefault();
-                }
-              } else {
-                // Tab (Forward)
-                if (activeIdx === elements.length - 1 || document.activeElement === lastEl) {
-                  firstEl.focus();
-                  e.preventDefault();
-                }
-              }
-            }
-          }
         }
       };
 
@@ -85,59 +80,120 @@ export function MobileNav({ navItems }: MobileNavProps) {
   }, [isOpen]);
 
   const overlay = (
-    <div
-      ref={containerRef}
-      className="fixed inset-0 top-0 left-0 z-40 w-screen h-screen bg-background/98 dark:bg-background/99 backdrop-blur-xl flex flex-col justify-between animate-fade-in"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Navigation menu"
-    >
-      <Container className="pt-24 pb-12 flex flex-col justify-between h-full">
-        {/* Nav Items list */}
-        <nav className="flex flex-col space-y-4 text-left">
-          {navItems.map((item, idx) => (
-            <div
-              key={item.href}
-              className="opacity-0 animate-fade-in-up"
-              style={{ animationDelay: `${idx * 70}ms` }}
-            >
-              <NavLink
-                href={item.href}
-                onClick={() => setIsOpen(false)}
-                className="block text-2xl font-bold py-2 px-0 hover:translate-x-1 transition-transform duration-200"
-              >
-                {item.label}
-              </NavLink>
-            </div>
-          ))}
-        </nav>
+    <div className="fixed inset-0 z-40 md:hidden animate-fade-in">
+      {/* Backdrop — tapping outside closes the menu */}
+      <div
+        className="fixed inset-0 bg-background/60 dark:bg-black/75 backdrop-blur-sm transition-opacity"
+        onClick={() => setIsOpen(false)}
+        aria-hidden="true"
+      />
 
-        {/* Bottom Panel */}
-        <div 
-          className="opacity-0 animate-fade-in-up border-t border-border pt-8 mt-auto space-y-6"
-          style={{ animationDelay: `${navItems.length * 70}ms` }}
-        >
-          <div className="flex flex-col gap-4">
-            <Link
-              href="/login"
-              onClick={() => setIsOpen(false)}
-              className="flex h-11 items-center justify-center rounded-xl border border-border bg-card text-sm font-semibold hover:bg-muted transition-colors"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/signup"
-              onClick={() => setIsOpen(false)}
-              className="flex h-11 items-center justify-center rounded-xl bg-primary text-sm font-semibold text-primary-foreground shadow-md shadow-primary/10 hover:bg-primary/95 transition-all"
-            >
-              Get Started
-            </Link>
+      {/* Slide-down Panel anchored immediately below sticky header (top-14) */}
+      <div className="relative top-14 mx-auto w-full max-h-[calc(100vh-4rem)] overflow-y-auto border-b border-border/80 bg-background/95 dark:bg-background/98 backdrop-blur-2xl shadow-2xl transition-all duration-300 animate-slide-down">
+        <div className="px-4 py-5 sm:px-6 space-y-4">
+          {/* Primary Nav Tiles */}
+          <div className="grid grid-cols-3 gap-2">
+            {NAV_TILES.map((tile) => {
+              const Icon = tile.icon;
+              const isActive = pathname === tile.href;
+              return (
+                <Link
+                  key={tile.href}
+                  href={tile.href}
+                  onClick={() => setIsOpen(false)}
+                  className={cn(
+                    "flex flex-col items-center text-center p-3 rounded-xl border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring active:scale-95",
+                    isActive
+                      ? "border-primary/50 bg-primary/10 text-primary shadow-sm"
+                      : "border-border/60 bg-card/60 text-foreground hover:border-primary/30 hover:bg-muted/60"
+                  )}
+                >
+                  <div
+                    className={cn(
+                      "flex h-8 w-8 items-center justify-center rounded-lg mb-1.5 transition-colors",
+                      isActive
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "bg-muted/80 text-muted-foreground"
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <span className="text-xs font-bold leading-tight">{tile.label}</span>
+                  <span className="text-[9px] text-muted-foreground/80 mt-0.5 leading-tight">
+                    {tile.description}
+                  </span>
+                </Link>
+              );
+            })}
           </div>
-          <p className="text-center text-xs text-muted-foreground">
-            © {new Date().getFullYear()} Frontend Expert. Master Web Development.
-          </p>
+
+          {/* Trending Topics Pills */}
+          <div className="space-y-2 border-t border-border/40 pt-3.5">
+            <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground px-0.5">
+              <Sparkles className="h-3 w-3 text-primary" />
+              <span>Trending Topics</span>
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {POPULAR_TAGS.map((tag) => (
+                <Link
+                  key={tag}
+                  href={`/tags/${slugify(tag)}`}
+                  onClick={() => setIsOpen(false)}
+                  className="inline-flex items-center rounded-lg border border-border/60 bg-card/60 px-2.5 py-1 text-[11px] font-medium text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-muted transition-colors active:scale-95"
+                >
+                  #{tag}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Author Card Spotlight */}
+          <div className="rounded-xl border border-border/60 bg-card/40 p-3 flex items-center justify-between glass">
+            <div className="flex items-center gap-2.5 min-w-0">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/rounak.png"
+                alt="Rounak Kumar"
+                className="h-8 w-8 rounded-full object-cover border border-primary/30 shrink-0"
+              />
+              <div className="min-w-0">
+                <div className="text-xs font-bold text-foreground truncate">Rounak Kumar</div>
+                <div className="text-[10px] text-muted-foreground truncate">Core Systems Engineer</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <a
+                href="https://www.linkedin.com/in/rounak-kumar-644596153/"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="LinkedIn Profile"
+                className="flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground hover:text-[#0A66C2] transition-colors focus:outline-none"
+              >
+                <Linkedin className="h-3.5 w-3.5" />
+              </a>
+              <a
+                href="https://github.com/rounakkumar92/"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="GitHub Profile"
+                className="flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground hover:text-foreground transition-colors focus:outline-none"
+              >
+                <Github className="h-3.5 w-3.5" />
+              </a>
+            </div>
+          </div>
+
+          {/* CTA Button */}
+          <Link
+            href="/blog"
+            onClick={() => setIsOpen(false)}
+            className="flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-xs font-bold text-primary-foreground shadow-sm shadow-primary/20 hover:bg-primary/95 active:scale-[0.99] transition-all"
+          >
+            <span>Explore All Technical Articles</span>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
         </div>
-      </Container>
+      </div>
     </div>
   );
 
@@ -152,14 +208,13 @@ export function MobileNav({ navItems }: MobileNavProps) {
       >
         <span className="sr-only">Open main menu</span>
         {isOpen ? (
-          <X className="h-5 w-5 transition-all duration-300 rotate-90 scale-100" />
+          <X className="h-4.5 w-4.5 transition-all duration-200 rotate-90 scale-100" />
         ) : (
-          <Menu className="h-5 w-5 transition-all duration-300 scale-100" />
+          <Menu className="h-4.5 w-4.5 transition-all duration-200 scale-100" />
         )}
       </button>
 
-      {/* Portal to document.body — escapes sticky header stacking context so
-          backdrop-blur-xl and fixed positioning work correctly at any scroll position */}
+      {/* Render via Portal so it smoothly drops below sticky header */}
       {isOpen && mounted && createPortal(overlay, document.body)}
     </div>
   );

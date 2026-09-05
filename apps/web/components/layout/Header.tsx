@@ -5,13 +5,15 @@ import Link from "next/link";
 import { Container } from "../ui/container";
 import { ThemeToggle } from "./ThemeToggle";
 import { MobileNav } from "./MobileNav";
-import { Code2, Search } from "lucide-react";
+import { Code2, Search, LogOut, LayoutDashboard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SearchDialog } from "../search/SearchDialog";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 export function Header() {
   const [isScrolled, setIsScrolled] = React.useState(false);
   const [isSearchOpen, setIsSearchOpen] = React.useState(false);
+  const { user, isAuthenticated, isLoading, logout } = useAuth();
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -72,27 +74,41 @@ export function Header() {
               </kbd>
             </button>
             <ThemeToggle />
-            {/* Author avatar — links to LinkedIn */}
-            <a
-              href="https://www.linkedin.com/in/rounak-kumar-644596153/"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Rounak Kumar on LinkedIn"
-              className="group relative flex h-8 w-8 shrink-0 rounded-full border-2 border-primary/30 hover:border-primary/70 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring shadow-sm"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/rounak.png"
-                alt="Rounak Kumar"
-                className="h-full w-full rounded-full object-cover"
-              />
-            </a>
-            <Link
-              href="/blog"
-              className="inline-flex h-8 items-center justify-center rounded-lg bg-primary px-3.5 text-xs font-semibold text-primary-foreground shadow-sm shadow-primary/15 hover:bg-primary/95 hover:shadow-md hover:shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring"
-            >
-              Get Started
-            </Link>
+
+            {!isLoading && isAuthenticated && user ? (
+              <div className="flex items-center gap-2.5">
+                <Link
+                  href="/dashboard"
+                  className="flex items-center gap-2 rounded-lg border border-border/80 bg-card/60 px-3 py-1.5 text-xs font-semibold text-foreground hover:border-primary/40 hover:bg-muted/60 transition-all focus:outline-none focus:ring-1 focus:ring-ring"
+                >
+                  <LayoutDashboard className="h-3.5 w-3.5 text-primary" />
+                  <span className="max-w-[100px] truncate">{user.name}</span>
+                </Link>
+                <button
+                  onClick={() => logout()}
+                  aria-label="Sign out"
+                  title="Sign Out"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-border/60 text-muted-foreground hover:text-destructive hover:border-destructive/30 hover:bg-destructive/10 transition-colors focus:outline-none focus:ring-1 focus:ring-ring"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ) : !isLoading ? (
+              <div className="flex items-center gap-2.5">
+                <Link
+                  href="/login"
+                  className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors duration-200 px-2 py-1"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/signup"
+                  className="inline-flex h-8 items-center justify-center rounded-lg bg-primary px-3.5 text-xs font-semibold text-primary-foreground shadow-sm shadow-primary/15 hover:bg-primary/95 hover:shadow-md hover:shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-ring"
+                >
+                  Get Started
+                </Link>
+              </div>
+            ) : null}
           </div>
 
           {/* Mobile Menu Action */}

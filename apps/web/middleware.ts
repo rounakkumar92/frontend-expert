@@ -16,7 +16,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // 2. Protect Admin dashboard routes (except admin/login)
+  // 2. Protect Admin dashboard routes (except /admin/login)
   if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
     const sessionCookie = request.cookies.get("__session")?.value;
 
@@ -28,6 +28,7 @@ export async function middleware(request: NextRequest) {
 
     const session = await decryptSession(sessionCookie);
 
+    // Only ADMIN and AUTHOR roles can access the publisher workspace
     if (!session || (session.role !== "ADMIN" && session.role !== "AUTHOR")) {
       const loginUrl = new URL("/admin/login", request.url);
       loginUrl.searchParams.set("from", pathname);
@@ -56,6 +57,38 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // 4. Protect Reader Dashboard routes (/dashboard)
+  if (pathname.startsWith("/dashboard")) {
+    const sessionCookie = request.cookies.get("__session")?.value;
+
+    if (!sessionCookie) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("from", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    const session = await decryptSession(sessionCookie);
+
+    if (!session) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("from", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+  }
+
+  // 5. If already logged in, redirect /login or /signup to /dashboard
+  if (pathname === "/login" || pathname === "/signup") {
+    const sessionCookie = request.cookies.get("__session")?.value;
+    if (sessionCookie) {
+      const session = await decryptSession(sessionCookie);
+      if (session) {
+        const from = request.nextUrl.searchParams.get("from");
+        const destination = from && !from.startsWith("/admin") ? from : "/dashboard";
+        return NextResponse.redirect(new URL(destination, request.url));
+      }
+    }
+  }
+
   return NextResponse.next();
 }
 
@@ -64,5 +97,9 @@ export const config = {
     "/admin",
     "/admin/:path*",
     "/api/admin/:path*",
+    "/dashboard",
+    "/dashboard/:path*",
+    "/login",
+    "/signup",
   ],
 };

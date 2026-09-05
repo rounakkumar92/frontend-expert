@@ -8,6 +8,7 @@ import { ReadingProgress } from "@/components/article/ReadingProgress";
 import { ShareActions } from "@/components/article/ShareActions";
 import { ArticleCard } from "@/components/ArticleCard";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { BookmarkButton } from "@/components/bookmarks/BookmarkButton";
 import { getArticleBySlug, getAllArticles, getRelatedArticles, slugify } from "@/lib/content";
 import { getSiteUrl } from "@/lib/site";
 import { Calendar, Clock, ArrowLeft, Linkedin } from "lucide-react";
@@ -188,16 +189,19 @@ export default async function BlogPage({ params }: BlogPageProps) {
               </div>
             </div>
 
-            {/* Read Stats */}
-            <div className="flex items-center space-x-4 text-xs text-muted-foreground font-medium">
-              <span className="flex items-center gap-1.5">
-                <Calendar className="h-4 w-4" />
-                <span>{publishedAt}</span>
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Clock className="h-4 w-4" />
-                <span>{readTime}</span>
-              </span>
+            {/* Read Stats & Bookmark Action */}
+            <div className="flex items-center gap-4 flex-wrap">
+              <div className="flex items-center space-x-4 text-xs text-muted-foreground font-medium">
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="h-4 w-4" />
+                  <span>{publishedAt}</span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Clock className="h-4 w-4" />
+                  <span>{readTime}</span>
+                </span>
+              </div>
+              <BookmarkButton slug={slug} title={title} />
             </div>
           </div>
         </header>

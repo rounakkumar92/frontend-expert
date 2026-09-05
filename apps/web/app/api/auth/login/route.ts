@@ -5,14 +5,15 @@ import { comparePassword, encryptSession, setSessionCookie } from "@/lib/auth";
 import { checkRateLimit } from "@/lib/security";
 
 const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
+  email: z.string().trim().email().toLowerCase(),
+  password: z.string().min(1, "Password is required"),
 });
 
 export async function POST(request: NextRequest) {
-  // 1. Rate Limit Check
+  // 1. Rate Limit Check (10 attempts per min in prod, 100 in dev)
   const ip = request.headers.get("x-forwarded-for") || "127.0.0.1";
-  const rateLimit = checkRateLimit(ip, 5, 60000); // 5 attempts per min
+  const limit = process.env.NODE_ENV === "production" ? 10 : 100;
+  const rateLimit = checkRateLimit(ip, limit, 60000);
   if (!rateLimit.success) {
     return NextResponse.json(
       { error: "Too many login attempts. Please try again later." },

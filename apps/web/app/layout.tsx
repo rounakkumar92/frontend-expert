@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { ThemeProvider } from "../components/theme-provider";
+import { AuthProvider } from "../components/auth/AuthProvider";
 import { Header } from "../components/layout/Header";
 import { Footer } from "../components/layout/Footer";
 import "./globals.css";
@@ -78,9 +79,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header />
-          <main className="flex-grow flex flex-col">{children}</main>
-          <Footer />
+          <AuthProvider>
+            <Header />
+            <main className="flex-grow flex flex-col">{children}</main>
+            <Footer />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

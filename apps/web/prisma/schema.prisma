@@ -32,6 +32,7 @@ model User {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
   articles     Article[]
+  bookmarks    Bookmark[]
 
   @@map("users")
 }
@@ -82,4 +83,15 @@ model Tag {
   articles  Article[]
 
   @@map("tags")
+}
+
+model Bookmark {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  articleSlug String
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, articleSlug])
+  @@map("bookmarks")
 }

@@ -1,7 +1,8 @@
 import React from "react";
 import Link from "next/link";
 import { Container } from "../ui/container";
-import { Code2, Github, Twitter, Linkedin } from "lucide-react";
+import { Github, Twitter, Linkedin } from "lucide-react";
+import { Logo } from "@/components/brand/Logo";
 
 export function Footer() {
   return (
@@ -10,14 +11,7 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
           {/* Brand Col */}
           <div className="col-span-2 space-y-4 pr-0 md:pr-8">
-            <Link href="/" className="flex items-center space-x-2 group focus:outline-none">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr from-primary to-accent text-white shadow shadow-primary/10 transition-transform duration-200 group-hover:scale-[1.03]">
-                <Code2 className="h-4 w-4" />
-              </div>
-              <span className="text-sm font-bold tracking-tight text-foreground transition-colors duration-150 group-hover:text-primary">
-                Frontend<span className="text-primary font-extrabold">Expert</span>
-              </span>
-            </Link>
+            <Logo size="md" />
             <p className="text-muted-foreground/90 leading-relaxed max-w-xs text-xs">
               Modern, hands-on learning resources tailored for mastering frontend systems, runtime engines, state engines, and web performance.
             </p>

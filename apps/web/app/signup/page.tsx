@@ -3,8 +3,9 @@
 import React, { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { User, Lock, Mail, Loader2, AlertCircle, ArrowRight, Sparkles } from "lucide-react";
+import { User, Lock, Mail, Loader2, AlertCircle, ArrowRight } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { LogoIcon } from "@/components/brand/Logo";
 
 function SignupForm() {
   const router = useRouter();
@@ -69,8 +70,8 @@ function SignupForm() {
     <div className="w-full max-w-md mx-auto">
       <div className="rounded-2xl border border-border bg-card/60 p-8 shadow-xl backdrop-blur-md glass space-y-6">
         <div className="space-y-2 text-center">
-          <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary mb-1">
-            <Sparkles className="h-5 w-5" />
+          <div className="flex justify-center mb-1">
+            <LogoIcon size={46} showGlow className="shadow-lg shadow-primary/20 rounded-2xl" />
           </div>
           <h1 className="text-2xl font-extrabold tracking-tight text-foreground">
             Create Reader Account

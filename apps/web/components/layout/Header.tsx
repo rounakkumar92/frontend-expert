@@ -5,10 +5,11 @@ import Link from "next/link";
 import { Container } from "../ui/container";
 import { ThemeToggle } from "./ThemeToggle";
 import { MobileNav } from "./MobileNav";
-import { Code2, Search, LogOut, LayoutDashboard } from "lucide-react";
+import { Search, LogOut, LayoutDashboard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SearchDialog } from "../search/SearchDialog";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { Logo } from "@/components/brand/Logo";
 
 export function Header() {
   const [isScrolled, setIsScrolled] = React.useState(false);
@@ -51,14 +52,7 @@ export function Header() {
       <Container>
         <div className="flex h-14 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 group focus:outline-none">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr from-primary to-accent text-white shadow-md shadow-primary/10 group-hover:scale-[1.03] active:scale-95 transition-all duration-200">
-              <Code2 className="h-4.5 w-4.5" />
-            </div>
-            <span className="text-base font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent group-hover:text-primary transition-colors duration-200">
-              Frontend<span className="text-primary font-extrabold">Expert</span>
-            </span>
-          </Link>
+          <Logo size="md" />
 
           {/* Right Action Menu */}
           <div className="hidden md:flex items-center space-x-3">

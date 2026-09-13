@@ -34,6 +34,16 @@ export const metadata: Metadata = {
       ],
     },
   },
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+  },
   openGraph: {
     title: "Frontend Expert",
     description: "Empowering developers with premium, structured, hands-on learning resources for master class frontend engineering.",

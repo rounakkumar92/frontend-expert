@@ -4,6 +4,7 @@ import Link from "next/link";
 import { LayoutDashboard, FileText, FolderOpen, Tags, Users } from "lucide-react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { AdminLogoutButton } from "@/components/layout/AdminLogoutButton";
+import { LogoIcon } from "@/components/brand/Logo";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -24,12 +25,10 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
       <aside className="w-full md:w-64 border-b md:border-b-0 md:border-r border-border bg-card/10 backdrop-blur-sm flex flex-col shrink-0">
         {/* Brand */}
         <div className="h-16 flex items-center justify-between px-6 border-b border-border/80">
-          <Link href="/admin" className="flex items-center gap-2">
-            <span className="h-6 w-6 rounded bg-primary flex items-center justify-center text-primary-foreground font-extrabold text-xs">
-              FE
-            </span>
+          <Link href="/admin" className="flex items-center gap-2.5 group">
+            <LogoIcon size={26} className="group-hover:scale-105 transition-transform" />
             <span className="font-extrabold text-sm text-foreground tracking-tight">
-              Publishing Desk
+              Publishing<span className="text-primary ml-1 font-bold">Desk</span>
             </span>
           </Link>
           <ThemeToggle />

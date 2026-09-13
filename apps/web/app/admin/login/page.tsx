@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Lock, Mail, Loader2, AlertCircle } from "lucide-react";
+import { LogoIcon } from "@/components/brand/Logo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -48,9 +49,12 @@ export default function LoginPage() {
 
       <div className="w-full max-w-md">
         <div className="rounded-2xl border border-border bg-card/60 p-8 shadow-xl backdrop-blur-md glass space-y-6">
-          <div className="space-y-2 text-center">
-            <span className="text-xs font-bold uppercase tracking-widest text-primary">
-              Control Panel
+          <div className="space-y-3 text-center">
+            <div className="flex justify-center mb-1">
+              <LogoIcon size={46} showGlow className="shadow-lg shadow-primary/20 rounded-2xl" />
+            </div>
+            <span className="inline-block text-[11px] font-bold uppercase tracking-widest text-primary bg-primary/10 border border-primary/20 px-2.5 py-0.5 rounded-full">
+              Publishing Desk
             </span>
             <h1 className="text-2xl font-extrabold tracking-tight text-foreground">
               Sign In

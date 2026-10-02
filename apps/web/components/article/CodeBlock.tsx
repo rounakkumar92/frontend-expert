@@ -109,7 +109,7 @@ export function CodeBlock({ code, language = "typescript", filename }: CodeBlock
   };
 
   return (
-    <div className="relative group border border-border/60 rounded-xl bg-muted/20 dark:bg-card/25 shadow-sm overflow-hidden my-6">
+    <div className="relative group border border-border/60 rounded-xl shadow-sm overflow-hidden my-6" style={{ backgroundColor: 'hsl(var(--code-bg))' }}>
       {/* Header Bar */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-border/50 bg-muted/40 font-mono text-[10px] text-muted-foreground/80 font-bold uppercase select-none">
         <div className="flex items-center gap-1.5">
@@ -144,7 +144,7 @@ export function CodeBlock({ code, language = "typescript", filename }: CodeBlock
       </div>
 
       {/* Code Area */}
-      <div className="p-4 sm:p-5 overflow-x-auto font-mono text-xs sm:text-sm leading-relaxed text-foreground/90 whitespace-pre">
+      <div className="p-4 sm:p-5 overflow-x-auto font-mono text-xs sm:text-sm leading-relaxed whitespace-pre" style={{ color: 'hsl(var(--code-fg))' }}>
         <pre className="focus:outline-none">
           <code
             dangerouslySetInnerHTML={{

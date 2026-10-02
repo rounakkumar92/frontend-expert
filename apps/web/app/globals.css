@@ -33,36 +33,45 @@
     --ring: 262.1 83.3% 57.8%;
 
     --radius: 0.75rem; /* Modern rounded corners */
+
+    /* Code block surface — light: just off the page background */
+    --code-bg: 240 4.8% 96.5%;
+    --code-fg: 240 10% 10%;
   }
 
   .dark {
-    --background: 240 10% 3.9%;  /* Premium obsidian slate */
-    --foreground: 0 0% 98%;      /* Soft elegant off-white */
+    /* Editorial deep charcoal — warmer than pure black, avoids pure obsidian */
+    --background: 222 15% 8%;       /* ≈ #0f1117 — deep editorial slate */
+    --foreground: 210 15% 92%;      /* Soft warm off-white — comfortable long reading */
 
-    --card: 240 10% 5.9%;        /* Deep, slightly elevated obsidian */
-    --card-foreground: 0 0% 98%;
+    --card: 222 15% 11%;            /* Slightly elevated from bg — ≈ #151922 */
+    --card-foreground: 210 15% 92%;
 
-    --popover: 240 10% 5.9%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 222 15% 11%;
+    --popover-foreground: 210 15% 92%;
 
-    --primary: 262.1 83.3% 57.8%; /* Gorgeous brand violet */
+    --primary: 262.1 83.3% 63%;     /* Slightly lighter violet for dark — more legible */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 262.1 30% 12%;   /* Deep dark violet tint */
-    --secondary-foreground: 262.1 80% 85%;
+    --secondary: 262.1 25% 16%;     /* Deep dark violet tint */
+    --secondary-foreground: 262.1 70% 88%;
 
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    --muted: 222 12% 16%;           /* Subtle raised surface */
+    --muted-foreground: 215 15% 62%; /* ≈ #8d95a8 — readable against dark card */
 
-    --accent: 172.5 66% 50%;      /* Vibrant energetic Teal */
+    --accent: 172.5 60% 48%;        /* Slightly toned teal — less glaring on dark */
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 358.3 84.4% 40.2%;
+    --destructive: 358.3 75% 44%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 262.1 83.3% 57.8%;
+    --border: 222 12% 18%;          /* Subtle but present — editorial, not heavy */
+    --input: 222 12% 18%;
+    --ring: 262.1 83.3% 63%;
+
+    /* Code block — dark: warmer than card, distinct engineering console surface */
+    --code-bg: 222 18% 12%;         /* ≈ #181e2a — between card and bg */
+    --code-fg: 210 20% 88%;
   }
 }
 
@@ -71,11 +80,30 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground antialiased font-sans transition-colors duration-300;
+    /* No transition-colors on body — next-themes disableTransitionOnChange handles this */
+    @apply bg-background text-foreground antialiased font-sans;
   }
 }
 
-/* Glassmorphism custom helper utilities */
+/* Theme transitions — class added by JS after mount, removed on theme change */
+/* This avoids FOUC while still giving smooth transitions on user interaction */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition: background-color 200ms ease, border-color 200ms ease, color 150ms ease !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-transition,
+  .theme-transition *,
+  .theme-transition *::before,
+  .theme-transition *::after {
+    transition: none !important;
+  }
+}
+
+/* Glassmorphism helper utilities */
 .glass {
   background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(12px);
@@ -83,7 +111,7 @@
 }
 
 .dark .glass {
-  background: rgba(10, 10, 10, 0.75);
+  background: rgba(15, 17, 23, 0.78);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -102,4 +130,3 @@
 .animate-fade-in-up {
   animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-

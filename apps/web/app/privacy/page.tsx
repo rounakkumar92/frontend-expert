@@ -2,7 +2,7 @@ import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
-import { ShieldCheck, ArrowLeft, Lock, Database, Eye, Cookie, UserCheck, Mail } from "lucide-react";
+import { ShieldCheck, ArrowLeft, Lock, Database, Cookie, UserCheck, Mail } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",

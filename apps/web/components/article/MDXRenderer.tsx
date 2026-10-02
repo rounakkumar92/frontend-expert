@@ -124,9 +124,9 @@ const mdxComponents = {
 
   // Map Markdown pre/code tags to our premium custom CodeBlock component
   pre: ({ children }: React.HTMLAttributes<HTMLPreElement>) => {
-    if (React.isValidElement(children) && children.type === "code") {
+    if (React.isValidElement(children)) {
       const codeProps = children.props as React.HTMLAttributes<HTMLElement> & {
-        children: string;
+        children?: React.ReactNode;
         className?: string;
         filename?: string;
         title?: string;
@@ -135,7 +135,11 @@ const mdxComponents = {
 
       const langClass = codeProps.className || "";
       const language = langClass.replace("language-", "") || "typescript";
-      const code = String(codeProps.children || "").trim();
+      const code = typeof codeProps.children === "string"
+        ? codeProps.children
+        : Array.isArray(codeProps.children)
+          ? codeProps.children.join("")
+          : String(codeProps.children || "");
 
       // Extract filename from attributes or metastring
       let filename = codeProps.filename || codeProps.title || "";

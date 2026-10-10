@@ -55,6 +55,11 @@ export default function PrivacyPage() {
               we store your email solely for dispatching editorial updates. You can unsubscribe at any time with a single click.
             </li>
             <li>
+              <strong className="text-foreground">First-Party Content Intelligence:</strong> We collect aggregate, privacy-first 
+              reading metrics (article views, reading depth milestones, search query trends) to help authors understand technical content engagement. 
+              This is strictly first-party: no external advertising networks, third-party analytics scripts, cross-site trackers, or PII brokers are used.
+            </li>
+            <li>
               <strong className="text-foreground">Operational Logs:</strong> Standard HTTP server logs (IP address, user agent, requested URL, 
               and response status) are retained temporarily for cybersecurity, DDoS mitigation, and error diagnostics.
             </li>
@@ -68,7 +73,7 @@ export default function PrivacyPage() {
       content: (
         <div className="space-y-3">
           <p>
-            Frontend Expert uses strictly necessary first-party cookies for security and session state:
+            Frontend Expert uses strictly necessary first-party cookies and ephemeral session storage for platform state:
           </p>
           <ul className="list-disc pl-5 space-y-1.5 text-muted-foreground">
             <li>
@@ -78,6 +83,10 @@ export default function PrivacyPage() {
             <li>
               <code className="text-xs bg-muted px-1.5 py-0.5 rounded font-mono text-foreground">theme</code>: 
               A client-side preference cookie or local storage value tracking whether you prefer dark mode or light mode.
+            </li>
+            <li>
+              <code className="text-xs bg-muted px-1.5 py-0.5 rounded font-mono text-foreground">fe_analytics_session_id</code>: 
+              An ephemeral identifier stored strictly in browser <code className="text-xs bg-muted px-1.5 py-0.5 rounded font-mono text-foreground">sessionStorage</code> (wiped automatically when you close the tab) used exclusively for non-persistent deduplication of article views.
             </li>
           </ul>
           <p>

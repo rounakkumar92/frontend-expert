@@ -8,6 +8,7 @@ import { Search, X, ArrowLeft, History, FolderOpen, Tag, Trash2, ArrowRight } fr
 import { Article } from "@/lib/types";
 import { slugify } from "@/lib/utils";
 import { SearchResultCard } from "@/components/search/SearchResultCard";
+import { trackSearchEvent } from "@/lib/analytics-client";
 
 interface SearchPageClientProps {
   initialArticles: Article[];
@@ -39,36 +40,6 @@ export function SearchPageClient({ initialArticles }: SearchPageClientProps) {
     }
   }, []);
 
-  const handleQueryChange = (val: string) => {
-    setQuery(val);
-    const params = new URLSearchParams();
-    if (val.trim()) {
-      params.set("q", val);
-    }
-    router.replace(`/search?${params.toString()}`, { scroll: false });
-  };
-
-  const saveSearch = (searchQuery: string) => {
-    const trimmed = searchQuery.trim();
-    if (!trimmed) return;
-
-    setRecentSearches((prev) => {
-      const filtered = prev.filter((item) => item !== trimmed);
-      const next = [trimmed, ...filtered].slice(0, 5);
-      localStorage.setItem("fe-recent-searches", JSON.stringify(next));
-      return next;
-    });
-  };
-
-  const handleSelectResult = () => {
-    saveSearch(query);
-  };
-
-  const clearRecentSearches = () => {
-    localStorage.removeItem("fe-recent-searches");
-    setRecentSearches([]);
-  };
-
   // 2. Perform search matches across Title, Excerpt, Category, and Tags
   const getFilteredArticles = () => {
     const trimmed = query.trim().toLowerCase();
@@ -84,6 +55,58 @@ export function SearchPageClient({ initialArticles }: SearchPageClientProps) {
   };
 
   const filtered = getFilteredArticles();
+
+  // Debounce search query logging for queries typed on the search page
+  useEffect(() => {
+    const trimmed = query.trim();
+    if (!trimmed) return;
+
+    const timer = setTimeout(() => {
+      trackSearchEvent({
+        query: trimmed,
+        resultCount: filtered.length,
+      });
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [query, filtered.length]);
+
+  const handleQueryChange = (val: string) => {
+    setQuery(val);
+    const params = new URLSearchParams();
+    if (val.trim()) {
+      params.set("q", val);
+    }
+    router.replace(`/search?${params.toString()}`, { scroll: false });
+  };
+
+  const saveSearch = (searchQuery: string) => {
+    const trimmed = searchQuery.trim();
+    if (!trimmed) return;
+
+    setRecentSearches((prev) => {
+      const remaining = prev.filter((item) => item !== trimmed);
+      const next = [trimmed, ...remaining].slice(0, 5);
+      localStorage.setItem("fe-recent-searches", JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const handleSelectResult = (clickedSlug?: string) => {
+    saveSearch(query);
+    if (query.trim()) {
+      trackSearchEvent({
+        query: query.trim(),
+        resultCount: filtered.length,
+        clickedSlug,
+      });
+    }
+  };
+
+  const clearRecentSearches = () => {
+    localStorage.removeItem("fe-recent-searches");
+    setRecentSearches([]);
+  };
 
   // Extract unique popular categories and tags for quick explore widgets
   const categories = Array.from(new Set(initialArticles.map((a) => a.category))).slice(0, 5);
@@ -128,7 +151,17 @@ export function SearchPageClient({ initialArticles }: SearchPageClientProps) {
                 placeholder="Search by title, description, categories, or tags..."
                 value={query}
                 onChange={(e) => handleQueryChange(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && saveSearch(query)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    saveSearch(query);
+                    if (query.trim()) {
+                      trackSearchEvent({
+                        query: query.trim(),
+                        resultCount: filtered.length,
+                      });
+                    }
+                  }
+                }}
                 className="flex-1 bg-transparent text-sm sm:text-base text-foreground placeholder-muted-foreground outline-none border-none focus:ring-0 w-full"
               />
               {query && (
@@ -163,7 +196,7 @@ export function SearchPageClient({ initialArticles }: SearchPageClientProps) {
                   </div>
                   <div className="grid grid-cols-1 gap-4">
                     {filtered.map((article) => (
-                      <div key={article.id} onClick={handleSelectResult}>
+                      <div key={article.id} onClick={() => handleSelectResult(article.slug)}>
                         <SearchResultCard article={article} query={query} />
                       </div>
                     ))}

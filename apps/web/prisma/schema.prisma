@@ -33,6 +33,8 @@ model User {
   updatedAt    DateTime  @updatedAt
   articles     Article[]
   bookmarks    Bookmark[]
+  articleViews ArticleView[]
+  searchEvents SearchEvent[]
 
   @@map("users")
 }
@@ -95,3 +97,53 @@ model Bookmark {
   @@unique([userId, articleSlug])
   @@map("bookmarks")
 }
+
+model ArticleView {
+  id              String   @id @default(uuid())
+  articleSlug     String
+  articleTitle    String?
+  userId          String?
+  user            User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  sessionId       String
+  source          String?
+  fromSlug        String?
+  device          String?
+  readingProgress Int?
+  createdAt       DateTime @default(now())
+
+  @@index([articleSlug, createdAt])
+  @@index([sessionId, articleSlug, createdAt])
+  @@index([createdAt])
+  @@index([fromSlug, articleSlug])
+  @@map("article_views")
+}
+
+model SearchEvent {
+  id          String   @id @default(uuid())
+  query       String
+  resultCount Int
+  clickedSlug String?
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  sessionId   String?
+  createdAt   DateTime @default(now())
+
+  @@index([query])
+  @@index([resultCount, createdAt])
+  @@index([createdAt])
+  @@map("search_events")
+}
+
+model DiscoveryEvent {
+  id        String   @id @default(uuid())
+  type      String
+  target    String
+  fromSlug  String?
+  sessionId String?
+  createdAt DateTime @default(now())
+
+  @@index([type, target])
+  @@index([createdAt])
+  @@map("discovery_events")
+}
+

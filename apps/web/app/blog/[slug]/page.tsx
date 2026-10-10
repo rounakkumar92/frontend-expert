@@ -13,6 +13,7 @@ import { getArticleBySlug, getAllArticles, getRelatedArticles, slugify } from "@
 import { getSiteUrl } from "@/lib/site";
 import { Calendar, Clock, ArrowLeft, Linkedin } from "lucide-react";
 import Link from "next/link";
+import { ArticleTracker } from "@/components/article/ArticleTracker";
 
 interface BlogPageProps {
   params: Promise<{ slug: string }>;
@@ -142,6 +143,9 @@ export default async function BlogPage({ params }: BlogPageProps) {
 
       {/* Scroll indicator timeline */}
       <ReadingProgress />
+
+      {/* Non-blocking First-Party Analytics Tracker */}
+      <ArticleTracker articleSlug={slug} articleTitle={title} />
 
       <Container>
         {/* Back Link */}

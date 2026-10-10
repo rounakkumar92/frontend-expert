@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Search, X, Command, CornerDownLeft, ArrowUpDown, Clock, History, FileText, Trash2 } from "lucide-react";
 import { Article } from "@/lib/types";
 import { Highlight } from "./Highlight";
+import { trackSearchEvent } from "@/lib/analytics-client";
 
 // Module-level cache: fetched once per page session, reused on every subsequent open.
 // Avoids re-hitting the database every time the search dialog is opened.
@@ -197,10 +198,12 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
         if (filtered.length > 0 && filtered[activeIndex]) {
           const target = filtered[activeIndex];
           saveSearch(query);
+          trackSearchEvent({ query, resultCount: filtered.length, clickedSlug: target.slug });
           router.push(`/blog/${target.slug}`);
           onClose();
         } else if (query.trim()) {
           saveSearch(query);
+          trackSearchEvent({ query, resultCount: filtered.length });
           router.push(`/search?q=${encodeURIComponent(query.trim())}`);
           onClose();
         }
@@ -324,6 +327,7 @@ export function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
                 key={article.id}
                 onClick={() => {
                   saveSearch(query);
+                  trackSearchEvent({ query, resultCount: filtered.length, clickedSlug: article.slug });
                   router.push(`/blog/${article.slug}`);
                   onClose();
                 }}

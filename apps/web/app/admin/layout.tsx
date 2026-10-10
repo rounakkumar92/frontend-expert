@@ -1,7 +1,7 @@
 import React from "react";
 import { getSession } from "@/lib/auth";
 import Link from "next/link";
-import { LayoutDashboard, FileText, FolderOpen, Tags, Users } from "lucide-react";
+import { LayoutDashboard, FileText, FolderOpen, Tags, Users, BarChart3 } from "lucide-react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { AdminLogoutButton } from "@/components/layout/AdminLogoutButton";
 import { LogoIcon } from "@/components/brand/Logo";
@@ -69,13 +69,23 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           </Link>
 
           {session.role === "ADMIN" && (
-            <Link
-              href="/admin/authors"
-              className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-150"
-            >
-              <Users className="h-4 w-4 text-primary/70" />
-              <span>Authors & Roles</span>
-            </Link>
+            <>
+              <Link
+                href="/admin/analytics"
+                className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-150"
+              >
+                <BarChart3 className="h-4 w-4 text-primary/70" />
+                <span>Analytics & Intelligence</span>
+              </Link>
+
+              <Link
+                href="/admin/authors"
+                className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-150"
+              >
+                <Users className="h-4 w-4 text-primary/70" />
+                <span>Authors & Roles</span>
+              </Link>
+            </>
           )}
         </nav>
 

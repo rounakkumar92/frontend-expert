@@ -213,9 +213,11 @@ export default async function BlogPage({ params }: BlogPageProps) {
         {/* 4. Article Main Layout: 12-column grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 items-start">
           {/* A. Sidebar Side-rail (Columns: 3/12 - Desktop) */}
-          <aside className="lg:col-span-3 space-y-10 lg:sticky lg:top-24">
+          <aside className="lg:col-span-3 space-y-6 lg:space-y-10 lg:sticky lg:top-24">
             <ShareActions title={title} slug={slug} />
-            <TableOfContents content={content} />
+            <div className="hidden lg:block">
+              <TableOfContents content={content} />
+            </div>
           </aside>
 
           {/* B. Central Reading Canvas (Columns: 9/12) */}
